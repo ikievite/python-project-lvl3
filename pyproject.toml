@@ -9,14 +9,17 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
+requests = "^2.25.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.3"
 wemake-python-styleguide = "^0.15.2"
 pytest-cov = "^2.11.1"
+requests_mock = "^1.9.2"
 
 [tool.poetry.scripts]
 page-loader = "page_loader.scripts.page_loader:main"
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
