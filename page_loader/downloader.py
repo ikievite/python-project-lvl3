@@ -4,6 +4,7 @@
 
 
 import os
+from urllib.parse import urljoin, urlsplit
 
 import requests
 from bs4 import BeautifulSoup
@@ -29,8 +30,10 @@ def format_url(path, suffix):
     Returns:
         formatted url
     """
-    path = path.split('//')[-1]
-    path = path.replace('/', '-').replace('.', '-')
+    splitted = urlsplit(path)
+    netloc = splitted.netloc.replace('.', '-')
+    netpath = splitted.path.rstrip('/').replace('/', '-')
+    path = netloc + netpath
     return '{path}{extension}'.format(path=path, extension=suffix)
 
 
@@ -47,14 +50,12 @@ def download_file(url, filename):
             f.write(chunk)
 
 
-def mkdir(dir_name, output_dir):
+def mkdir(directory_path):
     """Create directory.
 
     Args:
-        dir_name: dir_name
-        output_dir: output_dir
+        directory_path: directory path
     """
-    directory_path = os.path.join(output_dir, dir_name)
     try:
         os.mkdir(directory_path)
     except FileExistsError:
@@ -67,8 +68,8 @@ def prepare_page(url, output_dir):  # noqa: WPS210 # ignore warning about too ma
     """Find, replace links to images.
 
     Args:
-        url: url path
-        output_dir: output_dir
+        url: url, link to page
+        output_dir: output_dir for saved page
 
     Returns:
         tag soup
@@ -76,35 +77,35 @@ def prepare_page(url, output_dir):  # noqa: WPS210 # ignore warning about too ma
     response = requests.get(url)
 
     directory_name = format_url(url, DIRECTORY_TRAILER)
-
-    mkdir(directory_name, output_dir)
+    directory_path = os.path.join(output_dir, directory_name)
+    mkdir(directory_path)
 
     soup = BeautifulSoup(response.text, 'lxml')
 
     for image in soup.find_all('img'):
         image_src_url = image['src']
-        image_full_url = os.path.join(url, os.path.normpath(image_src_url))
-        image_path = os.path.join(directory_name, format_url(image_full_url, ''))
-        download_file(image_full_url, image_path)
-        soup.find(src=image_src_url)['src'] = image_path
+        image_full_url = urljoin(url, image_src_url)
+        image_filepath = os.path.join(output_dir, directory_name, format_url(image_full_url, ''))
+        download_file(image_full_url, image_filepath)
+        soup.find(src=image_src_url)['src'] = image_filepath
     return soup
 
 
-def download(url_path, output_dir):
+def download(url, output_dir):
     """Download a web page.
 
     Args:
-        url_path: url path
+        url: url path
         output_dir: path to directory
 
     Returns:
-        formatted url path
+        formatted url
     """
-    page_name = format_url(url_path, HTML_EXTENSION)
+    page_name = format_url(url, HTML_EXTENSION)
 
     page_filepath = os.path.join(output_dir, page_name)
 
-    saved_page = prepare_page(url_path, output_dir)
+    saved_page = prepare_page(url, output_dir)
 
     with open(page_filepath, 'w') as f:  # noqa: WPS111 # ignore warning about too short name
         f.write(str(saved_page.prettify(formatter='html5')))
