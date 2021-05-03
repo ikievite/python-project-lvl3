@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 CHUNK_SIZE = 100000
 HTML_EXTENSION = '.html'
 DIRECTORY_TRAILER = '_files'
+DELIMITER = '-'
 
 
 class RequestError(Exception):
@@ -31,8 +32,8 @@ def format_url(path, suffix):
         formatted url
     """
     splitted = urlsplit(path)
-    netloc = splitted.netloc.replace('.', '-')
-    netpath = splitted.path.rstrip('/').replace('/', '-')
+    netloc = splitted.netloc.replace('.', DELIMITER)
+    netpath = splitted.path.rstrip('/').replace('/', DELIMITER)
     path = netloc + netpath
     return '{path}{extension}'.format(path=path, extension=suffix)
 
