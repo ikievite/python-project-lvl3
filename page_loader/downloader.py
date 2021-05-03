@@ -13,6 +13,7 @@ CHUNK_SIZE = 100000
 HTML_EXTENSION = '.html'
 DIRECTORY_TRAILER = '_files'
 DELIMITER = '-'
+TAGS = {'img': 'src', 'script': 'src', 'link': 'href'}
 
 
 class RequestError(Exception):
@@ -83,12 +84,21 @@ def prepare_page(url, output_dir):  # noqa: WPS210 # ignore warning about too ma
 
     soup = BeautifulSoup(response.text, 'lxml')
 
-    for image in soup.find_all('img'):
-        image_src_url = image['src']
-        image_full_url = urljoin(url, image_src_url)
-        image_filepath = os.path.join(output_dir, directory_name, format_url(image_full_url, ''))
-        download_file(image_full_url, image_filepath)
-        soup.find(src=image_src_url)['src'] = image_filepath
+    for tag, attr in TAGS.items():
+        for image in soup.find_all(tag):
+            image_src_url = image.get(attr)
+            if image_src_url:
+                image_full_url = urljoin(url, image_src_url)
+                image_filepath = os.path.join(
+                    output_dir,
+                    directory_name,
+                    format_url(image_full_url, ''),
+                )
+                download_file(image_full_url, image_filepath)
+                if tag == 'link':
+                    soup.find(href=image_src_url)[attr] = image_filepath
+                elif tag == 'script' or tag == 'img':
+                    soup.find(src=image_src_url)[attr] = image_filepath
     return soup
 
 
