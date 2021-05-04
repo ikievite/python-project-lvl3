@@ -13,7 +13,7 @@ CHUNK_SIZE = 100000
 HTML_EXTENSION = '.html'
 DIRECTORY_TRAILER = '_files'
 DELIMITER = '-'
-TAGS = {'img': 'src', 'script': 'src', 'link': 'href'}
+TAGS = {'img': 'src', 'script': 'src', 'link': 'href'}  # noqa: WPS407 # mutable module constant
 
 
 class RequestError(Exception):
@@ -66,8 +66,27 @@ def mkdir(directory_path):
         ))
 
 
-def prepare_page(url, output_dir):  # noqa: WPS210 # ignore warning about too many local variables
-    """Find, replace links to images.
+def is_local(resource_url, page_url):
+    """Check is resource local.
+
+    Args:
+        resource_url: url to resource (image, script, link...)
+        page_url: url to saved web page
+
+    Returns:
+        bool value
+    """
+    resource_netloc = urlsplit(resource_url).netloc
+    page_netloc = urlsplit(page_url).netloc
+    if resource_netloc == '':
+        return True
+    elif resource_netloc == page_netloc:
+        return True
+    return False
+
+
+def prepare_page(url, output_dir):  # noqa: WPS210, WPS231 # too many local variables
+    """Find, replace links to images.         # function with too much cognitive complexity.
 
     Args:
         url: url, link to page
@@ -85,20 +104,20 @@ def prepare_page(url, output_dir):  # noqa: WPS210 # ignore warning about too ma
     soup = BeautifulSoup(response.text, 'lxml')
 
     for tag, attr in TAGS.items():
-        for image in soup.find_all(tag):
-            image_src_url = image.get(attr)
-            if image_src_url:
-                image_full_url = urljoin(url, image_src_url)
-                image_filepath = os.path.join(
+        for resource in soup.find_all(tag):
+            resource_src_url = resource.get(attr)
+            if resource_src_url and is_local(resource_src_url, url):
+                resource_full_url = urljoin(url, resource_src_url)
+                resourse_filepath = os.path.join(
                     output_dir,
                     directory_name,
-                    format_url(image_full_url, ''),
+                    format_url(resource_full_url, ''),
                 )
-                download_file(image_full_url, image_filepath)
+                download_file(resource_full_url, resourse_filepath)
                 if tag == 'link':
-                    soup.find(href=image_src_url)[attr] = image_filepath
-                elif tag == 'script' or tag == 'img':
-                    soup.find(src=image_src_url)[attr] = image_filepath
+                    soup.find(href=resource_src_url)[attr] = resourse_filepath
+                elif tag == 'script' or tag == 'img':  # noqa: WPS514 # implicit `in` condition
+                    soup.find(src=resource_src_url)[attr] = resourse_filepath
     return soup
 
 
