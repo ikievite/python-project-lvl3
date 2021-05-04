@@ -4,7 +4,10 @@
 
 
 import argparse
+import logging
 import os
+
+logger = logging.getLogger(__name__)
 
 
 def prepare_args_parser():
@@ -31,4 +34,5 @@ def parse_arguments():
     Returns:
         parser and arguments.
     """
+    logger.info(prepare_args_parser())
     return prepare_args_parser()
