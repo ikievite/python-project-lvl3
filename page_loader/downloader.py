@@ -3,11 +3,14 @@
 """Module downloads web page."""
 
 
+import logging
 import os
 from urllib.parse import urljoin, urlsplit
 
 import requests
 from bs4 import BeautifulSoup
+
+logger = logging.getLogger(__name__)
 
 CHUNK_SIZE = 100000
 HTML_EXTENSION = '.html'
@@ -36,7 +39,9 @@ def format_url(path, suffix):
     netloc = splitted.netloc.replace('.', DELIMITER)
     netpath = splitted.path.rstrip('/').replace('/', DELIMITER)
     path = netloc + netpath
-    return '{path}{extension}'.format(path=path, extension=suffix)
+    formatted_url = '{path}{extension}'.format(path=path, extension=suffix)
+    logger.debug(formatted_url)
+    return formatted_url
 
 
 def download_file(url, filename):
