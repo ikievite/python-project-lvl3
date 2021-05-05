@@ -34,5 +34,5 @@ def parse_arguments():
     Returns:
         parser and arguments.
     """
-    logger.info(prepare_args_parser())
+    logger.info('Parsed arguments: {0}'.format(prepare_args_parser()))
     return prepare_args_parser()
