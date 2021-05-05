@@ -3,6 +3,9 @@
 """Page loader."""
 
 
+import os
+import sys
+
 from page_loader.args_parser import parse_arguments
 from page_loader.downloader import RequestError, download
 
@@ -15,6 +18,7 @@ def main():
         print(page_content)  # noqa: WPS421 # ignore warning about print
     except RequestError as e:  # noqa: WPS111 # ignore warning about too short name
         print('Exception: {0}'.format(str(e)))  # noqa: WPS421 # ignore warning about print
+    sys.exit(os.EX_OK)
 
 
 if __name__ == '__main__':
