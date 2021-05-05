@@ -38,10 +38,8 @@ def format_url(path, suffix):
     splitted = urlsplit(path)
     netloc = splitted.netloc.replace('.', DELIMITER)
     netpath = splitted.path.rstrip('/').replace('/', DELIMITER)
-    path = netloc + netpath
-    formatted_url = '{path}{extension}'.format(path=path, extension=suffix)
-    logger.debug(formatted_url)
-    return formatted_url
+    formatted_path = netloc + netpath
+    return '{path}{extension}'.format(path=formatted_path, extension=suffix)
 
 
 def download_file(url, filename):
@@ -51,6 +49,10 @@ def download_file(url, filename):
         url: download link
         filename: filename for file
     """
+    logger.debug('Downloading resource {0} with filepath and name {1}'.format(
+        url,
+        filename,
+    ))
     response = requests.get(url)
     with open(filename, 'wb') as f:  # noqa: WPS111 # ignore warning about too short name
         for chunk in response.iter_content(CHUNK_SIZE):
@@ -63,7 +65,10 @@ def mkdir(directory_path):
     Args:
         directory_path: directory path
     """
-    try:
+    try:  # noqa: WPS229 # ignore warning about too long ``try`` body length
+        logger.debug('Creating folder {0} for local resources: images, scripts...'.format(
+            directory_path,
+        ))
         os.mkdir(directory_path)
     except FileExistsError:
         print('The directory `{0}` was previously created'.format(  # noqa: WPS421
@@ -84,9 +89,12 @@ def is_local(resource_url, page_url):
     resource_netloc = urlsplit(resource_url).netloc
     page_netloc = urlsplit(page_url).netloc
     if resource_netloc == '':
+        logger.debug('Resourse {0} is local'.format(resource_url))
         return True
     elif resource_netloc == page_netloc:
+        logger.debug('Resourse {0} is local'.format(resource_url))
         return True
+    logger.debug('Resourse {0} is non local'.format(resource_url))
     return False
 
 
@@ -113,16 +121,29 @@ def prepare_page(url, output_dir):  # noqa: WPS210, WPS231 # too many local vari
             resource_src_url = resource.get(attr)
             if resource_src_url and is_local(resource_src_url, url):
                 resource_full_url = urljoin(url, resource_src_url)
-                resourse_filepath = os.path.join(
+                logger.debug('{0} is full url for resource {1}'.format(
+                    resource_full_url,
+                    resource_src_url,
+                ))
+                resource_filename = format_url(resource_full_url, '')
+                resource_filepath = os.path.join(
                     output_dir,
                     directory_name,
-                    format_url(resource_full_url, ''),
+                    resource_filename,
                 )
-                download_file(resource_full_url, resourse_filepath)
+                download_file(resource_full_url, resource_filepath)
+                resource_local_filepath = os.path.join(
+                    directory_name,
+                    resource_filename,
+                )
+                logger.debug('Replacing url from {0} to {1}'.format(
+                    resource_src_url,
+                    resource_local_filepath,
+                ))
                 if tag == 'link':
-                    soup.find(href=resource_src_url)[attr] = resourse_filepath
+                    soup.find(href=resource_src_url)[attr] = resource_local_filepath
                 elif tag == 'script' or tag == 'img':  # noqa: WPS514 # implicit `in` condition
-                    soup.find(src=resource_src_url)[attr] = resourse_filepath
+                    soup.find(src=resource_src_url)[attr] = resource_local_filepath
     return soup
 
 
@@ -142,6 +163,7 @@ def download(url, output_dir):
 
     saved_page = prepare_page(url, output_dir)
 
+    logger.debug('Saving web page with filepath: {0}'.format(page_filepath))
     with open(page_filepath, 'w') as f:  # noqa: WPS111 # ignore warning about too short name
         f.write(str(saved_page.prettify(formatter='html5')))
 
