@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
+BS4_FORMATTER = 'html5'
 CHUNK_SIZE = 100000
 HTML_EXTENSION = '.html'
 DIRECTORY_TRAILER = '_files'
@@ -25,21 +26,21 @@ class RequestError(Exception):
     pass  # noqa: WPS420, WPS604 # ignore wrong keyword: pass, incorrect node inside `class` body
 
 
-def format_url(path, suffix):
+def format_url(url, suffix):
     """Format an url path.
 
     Args:
-        path: url path
+        url: url
         suffix: suffix for name
 
     Returns:
         formatted url
     """
-    splitted = urlsplit(path)
+    splitted = urlsplit(url)
     netloc = splitted.netloc.replace('.', DELIMITER)
     netpath = splitted.path.rstrip('/').replace('/', DELIMITER)
-    formatted_path = netloc + netpath
-    return '{path}{extension}'.format(path=formatted_path, extension=suffix)
+    formatted = netloc + netpath
+    return '{0}{1}'.format(formatted, suffix)
 
 
 def download_file(url, filename):
@@ -108,7 +109,11 @@ def prepare_page(url, output_dir):  # noqa: WPS210, WPS231 # too many local vari
     Returns:
         tag soup
     """
-    response = requests.get(url)
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        raise SystemExit(e)
 
     directory_name = format_url(url, DIRECTORY_TRAILER)
     directory_path = os.path.join(output_dir, directory_name)
@@ -155,7 +160,7 @@ def download(url, output_dir):
         output_dir: path to directory
 
     Returns:
-        formatted url
+        filepath to saved web page
     """
     page_name = format_url(url, HTML_EXTENSION)
 
@@ -165,6 +170,6 @@ def download(url, output_dir):
 
     logger.debug('Saving web page with filepath: {0}'.format(page_filepath))
     with open(page_filepath, 'w') as f:  # noqa: WPS111 # ignore warning about too short name
-        f.write(str(saved_page.prettify(formatter='html5')))
+        f.write(str(saved_page.prettify(formatter=BS4_FORMATTER)))
 
     return page_filepath
