@@ -23,7 +23,7 @@ def prepare_args_parser():
         '--output',
         default=os.getcwd(),
         dest='output_dir',
-        help='set output directory (default is your current working directory)',
+        help='set output directory (default: is your current working directory)',
     )
     return parser.parse_args()
 
