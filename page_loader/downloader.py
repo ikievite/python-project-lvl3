@@ -20,7 +20,13 @@ DELIMITER = '-'
 TAGS = {'img': 'src', 'script': 'src', 'link': 'href'}  # noqa: WPS407 # mutable module constant
 
 
-class RequestError(Exception):
+class AppInternalError(Exception):
+    """A class to represent app error."""
+
+    pass  # noqa: WPS420, WPS604 # ignore wrong keyword: pass, incorrect node inside `class` body
+
+
+class RequestError(AppInternalError):
     """A class to represent download error."""
 
     pass  # noqa: WPS420, WPS604 # ignore wrong keyword: pass, incorrect node inside `class` body
@@ -108,12 +114,15 @@ def prepare_page(url, output_dir):  # noqa: WPS210, WPS231 # too many local vari
 
     Returns:
         tag soup
+
+    Raises:
+        RequestError: if there is a network problem
     """
-    try:
+    try:  # noqa: WPS229 # too long ``try`` body length: 2 > 1
         response = requests.get(url)
         response.raise_for_status()
-    except requests.exceptions.RequestException as e:
-        raise SystemExit(e)
+    except requests.exceptions.RequestException as e:  # noqa: WPS111 # too short name
+        raise RequestError(e)
 
     directory_name = format_url(url, DIRECTORY_TRAILER)
     directory_path = os.path.join(output_dir, directory_name)
