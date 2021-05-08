@@ -6,27 +6,23 @@
 import logging
 import os
 
-import requests
-
 logger = logging.getLogger(__name__)
 
 CHUNK_SIZE = 100000
 
 
-def download_file(url, filename):
-    """Download file using `url`.
+def write_file(link_content, filename):
+    """Write file.
 
     Args:
-        url: download link
+        link_content: content
         filename: filename for file
     """
-    logger.debug('Downloading resource {0} with filepath and name {1}'.format(
-        url,
+    logger.debug('Writing resource to file {0}'.format(
         filename,
     ))
-    response = requests.get(url)
     with open(filename, 'wb') as f:  # noqa: WPS111 # ignore warning about too short name
-        for chunk in response.iter_content(CHUNK_SIZE):
+        for chunk in link_content.iter_content(CHUNK_SIZE):
             f.write(chunk)
 
 

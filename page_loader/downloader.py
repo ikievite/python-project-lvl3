@@ -10,7 +10,8 @@ from urllib.parse import urljoin, urlsplit
 import requests
 from bs4 import BeautifulSoup
 
-from page_loader.file_operations import download_file, mkdir
+from page_loader.file_operations import mkdir, write_file
+from page_loader.network_operations import get_content
 
 logger = logging.getLogger(__name__)
 
@@ -112,7 +113,8 @@ def prepare_page(url, output_dir):  # noqa: WPS210, WPS231 # too many local vari
                     directory_name,
                     resource_filename,
                 )
-                download_file(resource_full_url, resource_filepath)
+                link_content = get_content(url)
+                write_file(link_content, resource_filepath)
                 resource_local_filepath = os.path.join(
                     directory_name,
                     resource_filename,
