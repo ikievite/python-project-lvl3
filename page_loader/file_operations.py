@@ -48,3 +48,5 @@ def mkdir(directory_path):
         ))
     except FileNotFoundError as e:  # noqa: WPS111 # ignore warning - too short name: e < 2
         raise FileError('No such output {0} directory'.format(directory_path)) from e
+    except PermissionError as e:  # noqa: WPS111 # ignore warning - too short name: e < 2
+        raise FileError('No write permissions for {0} directory'.format(directory_path)) from e
