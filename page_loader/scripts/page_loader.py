@@ -7,7 +7,8 @@ import os
 import sys
 
 from page_loader.args_parser import parse_arguments
-from page_loader.downloader import AppInternalError, download
+from page_loader.downloader import download
+from page_loader.errors import AppInternalError
 
 
 def main():

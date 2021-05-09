@@ -10,6 +10,7 @@ from urllib.parse import urljoin, urlsplit
 import requests
 from bs4 import BeautifulSoup
 
+from page_loader.errors import RequestError
 from page_loader.file_operations import mkdir, write_file
 from page_loader.network_operations import get_content
 
@@ -20,18 +21,6 @@ HTML_EXTENSION = '.html'
 DIRECTORY_TRAILER = '_files'
 DELIMITER = '-'
 TAGS = {'img': 'src', 'script': 'src', 'link': 'href'}  # noqa: WPS407 # mutable module constant
-
-
-class AppInternalError(Exception):
-    """A class to represent app error."""
-
-    pass  # noqa: WPS420, WPS604 # ignore wrong keyword: pass, incorrect node inside `class` body
-
-
-class RequestError(AppInternalError):
-    """A class to represent download error."""
-
-    pass  # noqa: WPS420, WPS604 # ignore wrong keyword: pass, incorrect node inside `class` body
 
 
 def format_url(url, suffix):

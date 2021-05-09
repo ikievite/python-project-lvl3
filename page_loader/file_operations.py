@@ -6,6 +6,8 @@
 import logging
 import os
 
+from page_loader.errors import FileError
+
 logger = logging.getLogger(__name__)
 
 CHUNK_SIZE = 100000
@@ -31,6 +33,9 @@ def mkdir(directory_path):
 
     Args:
         directory_path: directory path
+
+    Raises:
+        FileError: if there a problem with files.
     """
     try:  # noqa: WPS229 # ignore warning about too long ``try`` body length
         logger.debug('Creating folder {0} for local resources: images, scripts...'.format(
@@ -41,3 +46,5 @@ def mkdir(directory_path):
         print('The directory `{0}` was previously created'.format(  # noqa: WPS421
             directory_path,                                 # ignore warning about `print`
         ))
+    except FileNotFoundError as e:  # noqa: WPS111 # ignore warning - too short name: e < 2
+        raise FileError('No such output {0} directory'.format(directory_path)) from e
