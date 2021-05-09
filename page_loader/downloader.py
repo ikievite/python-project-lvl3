@@ -113,7 +113,7 @@ def prepare_page(url, output_dir):  # noqa: WPS210, WPS231 # too many local vari
                     directory_name,
                     resource_filename,
                 )
-                link_content = get_content(url)
+                link_content = get_content(resource_full_url)
                 write_file(link_content, resource_filepath)
                 resource_local_filepath = os.path.join(
                     directory_name,
