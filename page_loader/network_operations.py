@@ -7,6 +7,8 @@ import logging
 
 import requests
 
+from page_loader.errors import RequestError
+
 logger = logging.getLogger(__name__)
 
 
@@ -18,8 +20,16 @@ def get_content(url):
 
     Returns:
         content
+
+    Raises:
+        RequestError: if there is a network problem
     """
-    logger.debug('Getting content from url {0}'.format(
-        url,
-    ))
-    return requests.get(url)
+    try:  # noqa: WPS229 # too long ``try`` body length
+        logger.debug('Getting content from url {0}'.format(
+            url,
+        ))
+        response = requests.get(url)
+        response.raise_for_status()
+        return response
+    except requests.exceptions.RequestException as e:  # noqa: WPS111 # too short name
+        raise RequestError(e)

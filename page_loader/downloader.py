@@ -7,10 +7,8 @@ import logging
 import os
 from urllib.parse import urljoin, urlsplit
 
-import requests
 from bs4 import BeautifulSoup
 
-from page_loader.errors import RequestError
 from page_loader.file_operations import mkdir, write_file
 from page_loader.network_operations import get_content
 
@@ -71,16 +69,8 @@ def prepare_page(url, output_dir):  # noqa: WPS210, WPS231 # too many local vari
 
     Returns:
         tag soup
-
-    Raises:
-        RequestError: if there is a network problem
     """
-    try:  # noqa: WPS229 # too long ``try`` body length: 2 > 1
-        response = requests.get(url)
-        response.raise_for_status()
-    except requests.exceptions.RequestException as e:  # noqa: WPS111 # too short name
-        raise RequestError(e)
-
+    response = get_content(url)
     directory_name = format_url(url, DIRECTORY_TRAILER)
     directory_path = os.path.join(output_dir, directory_name)
     mkdir(directory_path)
