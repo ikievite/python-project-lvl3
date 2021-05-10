@@ -12,7 +12,7 @@ DIRECTORY = 'tests/fixtures/OUTPUT_DIRECTORY'
 
 test_data = [
     ('tests/fixtures/NOT_EXISTS/output', 'No such output {0} directory'),
-    ('tests/fixtures/no_rights/output', 'No write permissions for {0} directory')
+    ('/root/no_rights/output', 'No write permissions for {0} directory')
 ]
 
 
