@@ -7,6 +7,7 @@ import pytest
 from page_loader.file_operations import mkdir
 from page_loader.errors import FileError
 
+
 DIRECTORY = 'tests/fixtures/OUTPUT_DIRECTORY'
 
 test_data = [
