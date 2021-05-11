@@ -33,7 +33,7 @@ def test_write_file(sample_file='tests/fixtures/original.original'):
         with tempfile.TemporaryDirectory() as directory_name:
             the_dir = pathlib.Path(directory_name)
             target_path = os.path.join(the_dir, 'test.file')
-            write_file(get_content(dl_path), target_path)
+            write_file(dl_path, target_path)
 
             assert os.path.isfile(target_path)
 

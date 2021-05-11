@@ -6,26 +6,37 @@
 import logging
 import os
 
+import requests
+from progress.counter import Pie
+
 from page_loader.errors import FileError
 
 logger = logging.getLogger(__name__)
 
-CHUNK_SIZE = 100000
+CHUNK_SIZE = 1024
 
 
-def write_file(link_content, filename):
+def write_file(url, filename):
     """Write file.
 
     Args:
-        link_content: content
+        url: url
         filename: filename for file
     """
     logger.debug('Writing resource to file {0}'.format(
         filename,
     ))
-    with open(filename, 'wb') as f:  # noqa: WPS111 # ignore warning about too short name
-        for chunk in link_content.iter_content(CHUNK_SIZE):
-            f.write(chunk)
+    with requests.get(url, stream=True) as link_content:
+        link_content.raise_for_status()
+        total_length = link_content.headers.get('content-length')
+        with open(filename, 'wb') as f:  # noqa: WPS111 # ignore warning about too short name
+            if total_length:
+                with Pie(url, max=int(total_length)/CHUNK_SIZE) as progress:
+                    for chunk in link_content.iter_content(CHUNK_SIZE):
+                        f.write(chunk)  # noqa: WPS220 # too deep nesting: 24 > 20
+                        progress.next()  # noqa: B305, WPS220
+            else:
+                f.write(link_content.content)
 
 
 def mkdir(directory_path):
