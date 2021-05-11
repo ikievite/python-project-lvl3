@@ -23,7 +23,7 @@ class FancyPie(Progress):  # noqa: D101 # ignore warning about missing docstring
         nphases = len(self.phases)
         i = min(nphases - 1, int(self.progress * nphases))  # noqa: WPS111 # too short name
         message = self.message % self
-        line = ''.join([self.phases[i], message])
+        line = ''.join(['  {0} {1}'.format(self.phases[i], message)])
         self.writeln(line)
 
 
