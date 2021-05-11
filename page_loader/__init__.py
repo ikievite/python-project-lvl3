@@ -5,10 +5,12 @@
 
 import logging
 
+LOGFILE = 'logfile.log'
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-### stderr
+# stderr
 console = logging.StreamHandler()
 console.setLevel(logging.WARNING)
 formatter = logging.Formatter(
@@ -19,11 +21,13 @@ console.setFormatter(formatter)
 
 logger.addHandler(console)
 
-### File
-logfile = logging.FileHandler('logfile.log')
+# File
+logfile = logging.FileHandler(LOGFILE, 'w')
 logfile.setLevel(logging.DEBUG)
 formatter = logging.Formatter(
-    '{asctime} - {levelname} - {name} - {message}', datefmt='%H:%M:%S', style='{',
+    '{asctime} - {levelname} - {name} - {message}',
+    datefmt='%Y-%m-%d %H:%M:%S',  # noqa: WPS323 # ignore `%` string formatting
+    style='{',
 )
 logfile.setFormatter(formatter)
 
