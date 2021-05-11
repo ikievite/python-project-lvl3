@@ -7,7 +7,8 @@ import logging
 import os
 
 import requests
-from progress import Progress
+from progress.colors import color
+from progress.counter import Stack
 
 from page_loader.errors import FileError
 
@@ -16,14 +17,16 @@ logger = logging.getLogger(__name__)
 CHUNK_SIZE = 1024
 
 
-class FancyPie(Progress):  # noqa: D101 # ignore warning about missing docstring in public class
+class FancyPie(Stack):  # noqa: D101 # ignore warning about missing docstring in public class
     phases = ('○', '◔', '◑', '◕', '●')
+    color = None
 
     def update(self):  # noqa: D102 # ignore warning about missing docstring in public method
         nphases = len(self.phases)
         i = min(nphases - 1, int(self.progress * nphases))  # noqa: WPS111 # too short name
         message = self.message % self
-        line = ''.join(['  {0} {1}'.format(self.phases[i], message)])
+        pie = color(self.phases[i], fg=self.color)
+        line = ''.join(['  {0} {1}'.format(pie, message)])
         self.writeln(line)
 
 
@@ -42,7 +45,7 @@ def write_file(url, filename):
         total_length = link_content.headers.get('content-length')
         with open(filename, 'wb') as f:  # noqa: WPS111 # ignore warning about too short name
             if total_length:
-                with FancyPie(url, max=int(total_length)/CHUNK_SIZE) as progress:
+                with FancyPie(url, max=int(total_length)/CHUNK_SIZE, color='green') as progress:
                     for chunk in link_content.iter_content(CHUNK_SIZE):
                         f.write(chunk)  # noqa: WPS220 # too deep nesting: 24 > 20
                         progress.next()  # noqa: B305, WPS220
