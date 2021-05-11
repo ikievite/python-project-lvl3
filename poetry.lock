@@ -413,6 +413,13 @@ description = "Easy to use progress bars"
 category = "main"
 optional = false
 python-versions = "*"
+develop = false
+
+[package.source]
+type = "git"
+url = "https://github.com/verigak/progress.git"
+reference = "master"
+resolved_reference = "ca6310204e397999ac61ad69f8fba6a7fc775069"
 
 [[package]]
 name = "py"
@@ -671,7 +678,7 @@ typing_extensions = ">=3.6,<4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "89fd351eeca307bd3a6b2f54f0056d71f5b746771243d6791ef166f9ef55d1ef"
+content-hash = "29d8abb2ffd5727a16585eacc3a9bb11580ec29cbbed18b0153d9ec43d5673d1"
 
 [metadata.files]
 astor = [
@@ -913,9 +920,7 @@ pluggy = [
     {file = "pluggy-0.13.1-py2.py3-none-any.whl", hash = "sha256:966c145cd83c96502c3c3868f50408687b38434af77734af1e9ca461a4081d2d"},
     {file = "pluggy-0.13.1.tar.gz", hash = "sha256:15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0"},
 ]
-progress = [
-    {file = "progress-1.5.tar.gz", hash = "sha256:69ecedd1d1bbe71bf6313d88d1e6c4d2957b7f1d4f71312c211257f7dae64372"},
-]
+progress = []
 py = [
     {file = "py-1.10.0-py2.py3-none-any.whl", hash = "sha256:3b80836aa6d1feeaa108e046da6423ab8f6ceda6468545ae8d02d9d58d18818a"},
     {file = "py-1.10.0.tar.gz", hash = "sha256:21b81bda15b66ef5e1a777a21c4dcd9c20ad3efd0b3f817e7a809035269e1bd3"},
