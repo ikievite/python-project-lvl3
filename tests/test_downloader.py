@@ -6,6 +6,7 @@
 import os
 import pathlib
 import tempfile
+import logging
 
 import bs4
 
@@ -15,7 +16,11 @@ from page_loader.downloader import (HTML_EXTENSION, download, write_file,
 from page_loader.network_operations import get_content
 
 
+logger = logging.getLogger(__name__)
+
+
 def test_format_url():
+    logger.debug('Testing format_url function')
     assert format_url('https://ru.hexlet.io/courses', HTML_EXTENSION) == 'ru-hexlet-io-courses.html'
 
 
