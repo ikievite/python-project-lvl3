@@ -89,8 +89,7 @@ def prepare_page(url, output_dir):  # noqa: WPS210, WPS231 # too many local vari
                 ))
                 resource_filename = format_url(resource_full_url, '')
                 resource_filepath = os.path.join(
-                    output_dir,
-                    directory_name,
+                    directory_path,
                     resource_filename,
                 )
                 write_file(resource_full_url, resource_filepath)
