@@ -17,13 +17,16 @@ logger = logging.getLogger(__name__)
 CHUNK_SIZE = 1024
 
 
-class FancyPie(Stack):  # noqa: D101 # ignore warning about missing docstring in public class
+class FancyPie(Stack):
+    """Class represents `pie` progress."""
+
     phases = ('○', '◔', '◑', '◕', '●')
     color = None
 
-    def update(self):  # noqa: D102 # ignore warning about missing docstring in public method
+    def update(self):
+        """Update `pie`."""
         nphases = len(self.phases)
-        i = min(nphases - 1, int(self.progress * nphases))  # noqa: WPS111 # too short name
+        i = min(nphases - 1, int(self.progress * nphases))
         message = self.message % self
         pie = color(self.phases[i], fg=self.color)
         line = ''.join(['  {0} {1}'.format(pie, message)])
@@ -41,11 +44,11 @@ def write_file(url, filename):
         url,
         filename,
     ))
-    try:
+    try:  # noqa: WPS229 # ignore warning about too long ``try`` body length
         link_content = requests.get(url, stream=True)
         link_content.raise_for_status()
         total_length = link_content.headers.get('content-length')
-        with open(filename, 'wb') as f:  # noqa: WPS111 # ignore warning about too short name
+        with open(filename, 'wb') as f:
             if total_length:
                 with FancyPie(url, max=int(total_length)/CHUNK_SIZE, color='green') as progress:
                     for chunk in link_content.iter_content(CHUNK_SIZE):
@@ -53,8 +56,8 @@ def write_file(url, filename):
                         progress.next()  # noqa: B305, WPS220
             else:
                 f.write(link_content.content)
-    except requests.exceptions.RequestException as e:  # noqa: WPS111 # too short name
-        logger.warning(RequestError(e))
+    except requests.exceptions.RequestException as req_err:
+        logger.warning(RequestError(req_err))
 
 
 def mkdir(directory_path):
@@ -75,7 +78,7 @@ def mkdir(directory_path):
         print('The directory `{0}` was previously created'.format(  # noqa: WPS421
             directory_path,                                 # ignore warning about `print`
         ))
-    except FileNotFoundError as e:  # noqa: WPS111 # ignore warning - too short name: e < 2
+    except FileNotFoundError as e:
         raise FileError('No such output {0} directory'.format(directory_path)) from e
-    except PermissionError as e:  # noqa: WPS111 # ignore warning - too short name: e < 2
+    except PermissionError as e:
         raise FileError('No write permissions for {0} directory'.format(directory_path)) from e
