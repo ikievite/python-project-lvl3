@@ -10,7 +10,7 @@ import requests
 from progress.colors import color
 from progress.counter import Stack
 
-from page_loader.errors import FileError
+from page_loader.errors import FileError, RequestError
 
 logger = logging.getLogger(__name__)
 
@@ -37,10 +37,12 @@ def write_file(url, filename):
         url: url
         filename: filename for file
     """
-    logger.debug('Writing resource to file {0}'.format(
+    logger.debug('Writing resource {0} to file {1}'.format(
+        url,
         filename,
     ))
-    with requests.get(url, stream=True) as link_content:
+    try:
+        link_content = requests.get(url, stream=True)
         link_content.raise_for_status()
         total_length = link_content.headers.get('content-length')
         with open(filename, 'wb') as f:  # noqa: WPS111 # ignore warning about too short name
@@ -51,6 +53,8 @@ def write_file(url, filename):
                         progress.next()  # noqa: B305, WPS220
             else:
                 f.write(link_content.content)
+    except requests.exceptions.RequestException as e:  # noqa: WPS111 # too short name
+        logger.warning(RequestError(e))
 
 
 def mkdir(directory_path):
