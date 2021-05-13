@@ -60,19 +60,24 @@ def is_local(resource_url, page_url):
     return False
 
 
-def prepare_page(url, output_dir):  # noqa: WPS210, WPS231 # too many local variables
+def replace_local_urls(url, output_dir):  # noqa: WPS210, WPS231 # too many local variables
     """Find, replace links to images.         # function with too much cognitive complexity.
 
     Args:
-        url: url, link to page
+        url: link to page
         output_dir: output_dir for saved page
 
     Returns:
-        tag soup
+        page with replaced local urls
     """
     response = get_content(url)
+
     directory_name = format_url(url, DIRECTORY_TRAILER)
     directory_path = os.path.join(output_dir, directory_name)
+
+    logging.debug('Creating folder {0} for local resources: images, scripts...'.format(
+        directory_path,
+    ))
     mkdir(directory_path)
 
     soup = BeautifulSoup(response.text, 'lxml')
@@ -104,7 +109,7 @@ def prepare_page(url, output_dir):  # noqa: WPS210, WPS231 # too many local vari
                     soup.find(href=resource_src_url)[attr] = resource_local_filepath
                 elif tag == 'script' or tag == 'img':  # noqa: WPS514 # implicit `in` condition
                     soup.find(src=resource_src_url)[attr] = resource_local_filepath
-    return soup
+    return str(soup.prettify(formatter=BS4_FORMATTER))
 
 
 def download(url, output_dir):
@@ -117,14 +122,15 @@ def download(url, output_dir):
     Returns:
         filepath to saved web page
     """
-    page_name = format_url(url, HTML_EXTENSION)
+    logging.debug('Getting web page content for url {0}'.format(url))
 
+    page_name = format_url(url, HTML_EXTENSION)
     page_filepath = os.path.join(output_dir, page_name)
 
-    saved_page = prepare_page(url, output_dir)
+    saved_page = replace_local_urls(url, output_dir)
 
     logger.debug('Saving web page with filepath: {0}'.format(page_filepath))
     with open(page_filepath, 'w') as f:  # noqa: WPS111 # ignore warning about too short name
-        f.write(str(saved_page.prettify(formatter=BS4_FORMATTER)))
+        f.write(saved_page)
 
     return page_filepath
