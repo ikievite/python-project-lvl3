@@ -13,7 +13,7 @@ import bs4
 import requests_mock
 from page_loader.downloader import (HTML_EXTENSION, download, write_file,
                                     format_url)
-from page_loader.network_operations import get_content
+from page_loader.helpers import get_content
 
 
 logger = logging.getLogger(__name__)
