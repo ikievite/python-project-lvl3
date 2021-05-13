@@ -1,6 +1,6 @@
 
 
-"""Module works with files."""
+"""Module with helpers func."""
 
 
 import logging
