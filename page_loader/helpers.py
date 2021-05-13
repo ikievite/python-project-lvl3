@@ -93,10 +93,7 @@ def mkdir(directory_path):
     Raises:
         FileError: if there a problem with files.
     """
-    try:  # noqa: WPS229 # ignore warning about too long ``try`` body length
-        logger.debug('Creating folder {0} for local resources: images, scripts...'.format(
-            directory_path,
-        ))
+    try:
         os.mkdir(directory_path)
     except FileExistsError:
         print('The directory `{0}` was previously created'.format(  # noqa: WPS421
