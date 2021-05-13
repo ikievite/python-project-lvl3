@@ -4,8 +4,8 @@
 
 
 import logging
-import re
 import os
+import re
 from urllib.parse import urljoin, urlsplit
 
 from bs4 import BeautifulSoup
