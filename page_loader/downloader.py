@@ -10,8 +10,7 @@ from urllib.parse import urljoin, urlsplit
 
 from bs4 import BeautifulSoup
 
-from page_loader.helpers import mkdir, write_file
-from page_loader.network_operations import get_content
+from page_loader.helpers import get_content, mkdir, write_file
 
 logger = logging.getLogger(__name__)
 
