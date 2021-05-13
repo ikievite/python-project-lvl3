@@ -15,6 +15,7 @@ from page_loader.errors import FileError, RequestError
 logger = logging.getLogger(__name__)
 
 CHUNK_SIZE = 1024
+PROGRESS_COLOR = 'green'
 
 
 class FancyPie(Stack):
@@ -33,30 +34,29 @@ class FancyPie(Stack):
         self.writeln(line)
 
 
-def write_file(url, filename):
+def write_file(url, filename):  # noqa: WPS210 # too many local variables
     """Write file.
 
     Args:
         url: url
-        filename: filename for file
+        filename: filename
     """
     logger.debug('Writing resource {0} to file {1}'.format(
         url,
         filename,
     ))
     try:  # noqa: WPS229 # ignore warning about too long ``try`` body length
-        with requests.get(url, stream=True) as link_content:
+        with requests.get(url, stream=True) as link_content, open(filename, 'wb') as f:
             link_content.raise_for_status()
             total_length = link_content.headers.get('content-length')
-            with open(filename, 'wb') as f:
-                if total_length:
-                    chunks = int(total_length)/CHUNK_SIZE
-                    with FancyPie(url, max=chunks, color='green') as progress:
-                        for chunk in link_content.iter_content(CHUNK_SIZE):  # noqa: WPS220
-                            f.write(chunk)  # noqa: WPS220 # too deep nesting
-                            progress.next()  # noqa: B305, WPS220
-                else:
-                    f.write(link_content.content)
+            if total_length:
+                chunks = int(total_length)/CHUNK_SIZE
+                with FancyPie(url, max=chunks, color=PROGRESS_COLOR) as progress:
+                    for chunk in link_content.iter_content(CHUNK_SIZE):
+                        f.write(chunk)  # noqa: WPS220 # too deep nesting
+                        progress.next()  # noqa: B305, WPS220
+            else:
+                f.write(link_content.content)
     except requests.exceptions.RequestException as req_err:
         logger.warning(RequestError(req_err))
 
