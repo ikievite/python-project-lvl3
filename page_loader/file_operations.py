@@ -45,17 +45,18 @@ def write_file(url, filename):
         filename,
     ))
     try:  # noqa: WPS229 # ignore warning about too long ``try`` body length
-        link_content = requests.get(url, stream=True)
-        link_content.raise_for_status()
-        total_length = link_content.headers.get('content-length')
-        with open(filename, 'wb') as f:
-            if total_length:
-                with FancyPie(url, max=int(total_length)/CHUNK_SIZE, color='green') as progress:
-                    for chunk in link_content.iter_content(CHUNK_SIZE):
-                        f.write(chunk)  # noqa: WPS220 # too deep nesting: 24 > 20
-                        progress.next()  # noqa: B305, WPS220
-            else:
-                f.write(link_content.content)
+        with requests.get(url, stream=True) as link_content:
+            link_content.raise_for_status()
+            total_length = link_content.headers.get('content-length')
+            with open(filename, 'wb') as f:
+                if total_length:
+                    chunks = int(total_length)/CHUNK_SIZE
+                    with FancyPie(url, max=chunks, color='green') as progress:
+                        for chunk in link_content.iter_content(CHUNK_SIZE):  # noqa: WPS220
+                            f.write(chunk)  # noqa: WPS220 # too deep nesting
+                            progress.next()  # noqa: B305, WPS220
+                else:
+                    f.write(link_content.content)
     except requests.exceptions.RequestException as req_err:
         logger.warning(RequestError(req_err))
 
