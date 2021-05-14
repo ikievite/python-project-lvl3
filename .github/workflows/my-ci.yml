@@ -22,6 +22,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          sudo apt install -y git
           pip install poetry
           make install
 
