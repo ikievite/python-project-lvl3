@@ -29,5 +29,5 @@ build-backend = "poetry.masonry.api"
 
 [tool.pytest.ini_options]
 log_format = "%(asctime)s %(levelname)s %(message)s"
-log_cli = True
+log_cli = "True"
 log_cli_level = "DEBUG"
