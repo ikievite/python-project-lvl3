@@ -37,10 +37,10 @@ def format_url(url, suffix):
     netpath = splitted.path
     extention = pathlib.Path(netpath).suffix.lower()
     netpath = netpath.strip(extention)
-    netpath = re.sub('[^a-zA-Z0-9]', DELIMITER, splitted.path)
+    netpath = re.sub('[^a-zA-Z0-9]', DELIMITER, netpath)
     formatted = netloc + netpath
     if extention:
-        return '{0}{1}{2}'.format(formatted, extention, suffix)
+        return '{0}{1}'.format(formatted, extention)
     return '{0}{1}'.format(formatted, suffix)
 
 

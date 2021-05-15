@@ -7,6 +7,7 @@ import os
 import pathlib
 import tempfile
 import logging
+import pytest
 
 import bs4
 
@@ -18,10 +19,17 @@ from page_loader.helpers import get_content
 
 logger = logging.getLogger(__name__)
 
+test_urls = [
+    ('https://ru.hexlet.io/courses', HTML_EXTENSION, 'ru-hexlet-io-courses.html'),
+    ('https://ru.hexlet.io/assets/professions/nodejs.png', '', 'ru-hexlet-io-assets-professions-nodejs.png'),
+]
 
-def test_format_url():
+
+@pytest.mark.parametrize("url, extention, expected", test_urls)
+def test_format_url(url, extention, expected):
     logger.debug('Testing format_url function')
-    assert format_url('https://ru.hexlet.io/courses', HTML_EXTENSION) == 'ru-hexlet-io-courses.html'
+    result = format_url(url, extention)
+    assert result == expected
 
 
 def test_write_file(sample_file='tests/fixtures/original.original'):
