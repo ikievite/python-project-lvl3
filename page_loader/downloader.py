@@ -5,6 +5,7 @@
 
 import logging
 import os
+import pathlib
 import re
 from urllib.parse import urljoin, urlsplit
 
@@ -33,8 +34,13 @@ def format_url(url, suffix):
     """
     splitted = urlsplit(url)
     netloc = splitted.netloc.replace('.', DELIMITER)
+    netpath = splitted.path
+    extention = pathlib.Path(netpath).suffix.lower()
+    netpath = netpath.strip(extention)
     netpath = re.sub('[^a-zA-Z0-9]', DELIMITER, splitted.path)
     formatted = netloc + netpath
+    if extention:
+        return '{0}{1}{2}'.format(formatted, extention, suffix)
     return '{0}{1}'.format(formatted, suffix)
 
 
