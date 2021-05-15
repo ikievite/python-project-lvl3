@@ -7,7 +7,6 @@ import logging
 import os
 
 import requests
-from progress.colors import color
 from progress.counter import Stack
 
 from page_loader.errors import FileError, RequestError
@@ -22,14 +21,13 @@ class FancyPie(Stack):
     """Class represents `pie` progress."""
 
     phases = ('○', '◔', '◑', '◕', '●')
-    color = None
 
     def update(self):
         """Update `pie`."""
         nphases = len(self.phases)
         i = min(nphases - 1, int(self.progress * nphases))
         message = self.message % self
-        pie = color(self.phases[i], fg=self.color)
+        pie = self.phases[i]
         line = ''.join(['  {0} {1}'.format(pie, message)])
         self.writeln(line)
 
@@ -74,7 +72,7 @@ def write_file(url, filename):  # noqa: WPS210 # too many local variables
             total_length = link_content.headers.get('content-length')
             if total_length:
                 chunks = int(total_length)/CHUNK_SIZE
-                with FancyPie(url, max=chunks, color=PROGRESS_COLOR) as progress:
+                with FancyPie(url, max=chunks) as progress:
                     for chunk in link_content.iter_content(CHUNK_SIZE):
                         f.write(chunk)  # noqa: WPS220 # too deep nesting
                         progress.next()  # noqa: B305, WPS220
