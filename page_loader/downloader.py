@@ -16,6 +16,7 @@ from page_loader.helpers import get_content, mkdir, write_file
 logger = logging.getLogger(__name__)
 
 BS4_FORMATTER = 'html5'
+BS4_PARSER = 'lxml'
 HTML_EXTENSION = '.html'
 DIRECTORY_TRAILER = '_files'
 DELIMITER = '-'
@@ -88,7 +89,7 @@ def replace_local_urls(url, output_dir):  # noqa: WPS210, WPS231 # too many loca
     ))
     mkdir(directory_path)
 
-    soup = BeautifulSoup(response.text, 'html5lib')
+    soup = BeautifulSoup(response.text, BS4_PARSER)
 
     for tag, attr in TAGS.items():
         for resource in soup.find_all(tag):
