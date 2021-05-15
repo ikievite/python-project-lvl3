@@ -34,14 +34,16 @@ def format_url(url, suffix):
     """
     splitted = urlsplit(url)
     netloc = splitted.netloc.replace('.', DELIMITER)
-    netpath = splitted.path
+    netpath = splitted.path.rstrip('/')
     extention = pathlib.Path(netpath).suffix.lower()
     netpath = netpath.replace(extention, '')
     netpath = re.sub('[^a-zA-Z0-9]', DELIMITER, netpath)
-    formatted = netloc + netpath
+    formatted = netloc + netpath + suffix
     if extention:
         return '{0}{1}'.format(formatted, extention)
-    return '{0}{1}'.format(formatted, suffix)
+    if suffix:
+        return formatted
+    return formatted + HTML_EXTENSION
 
 
 def is_local(resource_url, page_url):
