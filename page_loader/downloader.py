@@ -88,7 +88,7 @@ def replace_local_urls(url, output_dir):  # noqa: WPS210, WPS231 # too many loca
     ))
     mkdir(directory_path)
 
-    soup = BeautifulSoup(response.text, 'lxml')
+    soup = BeautifulSoup(response.text, 'html.parser')
 
     for tag, attr in TAGS.items():
         for resource in soup.find_all(tag):
