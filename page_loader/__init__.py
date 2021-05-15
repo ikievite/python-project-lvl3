@@ -5,6 +5,8 @@
 
 import logging
 
+from page_loader.downloader import download
+
 LOGFILE = 'logfile.log'
 
 logger = logging.getLogger(__name__)
@@ -32,3 +34,8 @@ formatter = logging.Formatter(
 logfile.setFormatter(formatter)
 
 logger.addHandler(logfile)
+
+
+__all__ = (  # noqa: WPS410
+    'download',
+)
