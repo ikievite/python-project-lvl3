@@ -71,7 +71,7 @@ def write_file(url, filename):  # noqa: WPS210 # too many local variables
             link_content.raise_for_status()
             total_length = link_content.headers.get('content-length')
             if total_length:
-                chunks = int(total_length)/CHUNK_SIZE
+                chunks = int(total_length) / CHUNK_SIZE
                 with FancyPie(url, max=chunks) as progress:
                     for chunk in link_content.iter_content(CHUNK_SIZE):
                         f.write(chunk)  # noqa: WPS220 # too deep nesting
