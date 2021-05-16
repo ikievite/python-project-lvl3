@@ -14,7 +14,6 @@ import bs4
 import requests_mock
 from page_loader.downloader import (HTML_EXTENSION, download, write_file,
                                     format_url, replace_local_urls, find_local_resources)
-from page_loader.helpers import get_content
 
 
 logger = logging.getLogger(__name__)
@@ -53,6 +52,7 @@ def test_write_file(sample_file='tests/fixtures/original.original'):
 
             with open(target_path, 'rb') as f:
                 assert f.read() == sample_file
+
 
 @pytest.mark.skip(reason='temp')
 def test_download_check_content(requests_mock):
