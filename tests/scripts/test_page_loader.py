@@ -3,6 +3,7 @@
 """Tests for page-loader package."""
 
 
+import subprocess
 import pathlib
 import tempfile
 
@@ -19,3 +20,10 @@ def test_download_check_content(requests_mock):
         the_dir = pathlib.Path(directory_name)
         with open(download('http://test.com', the_dir)) as f:
             assert bs4.BeautifulSoup(f, 'lxml').get_text().strip() == 'data'
+
+
+def test_error_exit_code():
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        INVALID_BASE_URL = ['poetry', 'run', 'page-loader', '-o', tmpdirname, 'http://badsite']
+        process = subprocess.run(INVALID_BASE_URL, stdout=subprocess.DEVNULL)
+        assert process.returncode != 0
