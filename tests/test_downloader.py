@@ -69,6 +69,4 @@ def test_replace_local_urls():
             page_content = content.read()
             expected = result.read()
             page_replaced = replace_local_urls(page_content, 'https://site.com/blog/about', 'site-com-blog-about_files')
-            logger.debug(page_replaced)
-            logger.debug(expected)
     assert page_replaced == expected
