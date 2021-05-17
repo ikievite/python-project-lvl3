@@ -9,7 +9,7 @@ from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
-from page_loader.file_operations import mkdir, write_file
+from page_loader.file_operations import mkdir, write_file, mkpath
 from page_loader.network_operations import HTML_EXTENSION, format_url, get_content, is_local
 
 logger = logging.getLogger(__name__)
@@ -55,12 +55,7 @@ def replace_local_urls(page_content, url, local_resources, directory_name):
     soup = BeautifulSoup(page_content, BS4_PARSER)
 
     for resource in local_resources:
-        resource_full_url = urljoin(url, resource)
-        resource_filename = format_url(resource_full_url, '')
-        resource_filepath = os.path.join(
-            directory_name,
-            resource_filename,
-        )
+        resource_filepath = mkpath(directory_name, urljoin(url, resource))
         if soup.find(href=resource):
             soup.find(href=resource)['href'] = resource_filepath
         elif soup.find(src=resource):
@@ -78,11 +73,7 @@ def download_local_resources(resources, url, directory_path):
     """
     for resource in resources:
         resource_full_url = urljoin(url, resource)
-        resource_filename = format_url(resource_full_url, '')
-        resource_filepath = os.path.join(
-            directory_path,
-            resource_filename,
-        )
+        resource_filepath = mkpath(directory_path, resource_full_url)
         write_file(resource_full_url, resource_filepath)
 
 
@@ -98,13 +89,12 @@ def download(url, output_dir):  # noqa: WPS210 # too many local variables
     """
     logging.debug('Getting web page content for url {0}'.format(url))
 
-    page_name = format_url(url, HTML_EXTENSION)
-    page_filepath = os.path.join(output_dir, page_name)
+    page_filepath = mkpath(output_dir, url, HTML_EXTENSION)
 
     response = get_content(url).text
 
     directory_name = format_url(url, DIRECTORY_TRAILER)
-    directory_path = os.path.join(output_dir, directory_name)
+    directory_path = mkpath(output_dir, url, DIRECTORY_TRAILER)
 
     logging.debug('Creating folder {0} for local resources: images, scripts...'.format(
         directory_path,
