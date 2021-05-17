@@ -4,7 +4,7 @@
 
 
 import pytest
-from page_loader.helpers import mkdir
+from page_loader.file_operations import mkdir
 from page_loader.errors import FileError
 
 
