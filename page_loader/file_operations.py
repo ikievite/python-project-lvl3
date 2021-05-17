@@ -5,6 +5,7 @@
 
 import logging
 import os
+import pathlib
 
 import requests
 from progress.counter import Stack
@@ -73,8 +74,12 @@ def write_page(page_content, filepath):
     try:
         with open(filepath, 'w') as f:  # noqa: WPS111 # ignore warning about too short name
             f.write(page_content)
+    except FileNotFoundError as e:
+        raise FileError('No such output `{0}` directory'.format(
+            pathlib.Path(filepath).parent,
+        )) from e
     except PermissionError as e:
-        raise FileError('No write permissions for saving {0}'.format(filepath)) from e
+        raise FileError('No write permissions for saving `{0}`'.format(filepath)) from e
 
 
 def mkdir(directory_path):
