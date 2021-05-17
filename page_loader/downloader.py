@@ -8,7 +8,7 @@ from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
-from page_loader.file_operations import mkdir, write_file, mkpath
+from page_loader.file_operations import mkdir, write_file, write_page, mkpath
 from page_loader.network_operations import HTML_EXTENSION, format_url, get_content, is_local
 
 logger = logging.getLogger(__name__)
@@ -99,8 +99,7 @@ def download(url, output_dir):  # noqa: WPS210 # too many local variables
     page_filepath = mkpath(output_dir, url, HTML_EXTENSION)
 
     logger.debug('Saving web page with filepath: {0}'.format(page_filepath))
-    with open(page_filepath, 'w') as f:  # noqa: WPS111 # ignore warning about too short name
-        f.write(saved_page)
+    write_page(saved_page, page_filepath)
 
     directory_path = mkpath(output_dir, url, DIRECTORY_TRAILER)
 

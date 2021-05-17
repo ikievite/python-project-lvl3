@@ -60,6 +60,23 @@ def write_file(url, filename):  # noqa: WPS210 # too many local variables
         logger.warning(RequestError(req_err))
 
 
+def write_page(page_content, filepath):
+    """Write web page to filesystem.
+
+    Args:
+        page_content: content
+        filepath: filepath
+
+    Raises:
+        FileError: if there a problem with write permissions
+    """
+    try:
+        with open(filepath, 'w') as f:  # noqa: WPS111 # ignore warning about too short name
+            f.write(page_content)
+    except PermissionError as e:
+        raise FileError('No write permissions for saving {0}'.format(filepath)) from e
+
+
 def mkdir(directory_path):
     """Create directory.
 
