@@ -88,24 +88,26 @@ def download(url, output_dir):  # noqa: WPS210 # too many local variables
     """
     logging.debug('Getting web page content for url {0}'.format(url))
 
-    page_filepath = mkpath(output_dir, url, HTML_EXTENSION)
-
     response = get_content(url).text
 
+    local_resources = find_local_resources(response, url)
+
     directory_name = format_url(url, DIRECTORY_TRAILER)
+
+    saved_page = replace_local_urls(response, url, local_resources, directory_name)
+
+    page_filepath = mkpath(output_dir, url, HTML_EXTENSION)
+
+    logger.debug('Saving web page with filepath: {0}'.format(page_filepath))
+    with open(page_filepath, 'w') as f:  # noqa: WPS111 # ignore warning about too short name
+        f.write(saved_page)
+
     directory_path = mkpath(output_dir, url, DIRECTORY_TRAILER)
 
     logging.debug('Creating folder {0} for local resources: images, scripts...'.format(
         directory_path,
     ))
     mkdir(directory_path)
-
-    local_resources = find_local_resources(response, url)
-    saved_page = replace_local_urls(response, url, local_resources, directory_name)
-
-    logger.debug('Saving web page with filepath: {0}'.format(page_filepath))
-    with open(page_filepath, 'w') as f:  # noqa: WPS111 # ignore warning about too short name
-        f.write(saved_page)
 
     download_local_resources(local_resources, url, directory_path)
 
