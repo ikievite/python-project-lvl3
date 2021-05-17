@@ -12,9 +12,9 @@ import pytest
 import bs4
 
 import requests_mock
-from page_loader.downloader import (HTML_EXTENSION, download, write_file,
-                                    format_url, replace_local_urls, find_local_resources)
-
+from page_loader.downloader import (download, write_file,
+                                    replace_local_urls, find_local_resources)
+from page_loader.network_operations import format_url, HTML_EXTENSION
 
 logger = logging.getLogger(__name__)
 

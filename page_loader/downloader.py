@@ -5,72 +5,23 @@
 
 import logging
 import os
-import pathlib
-import re
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
-from page_loader.helpers import get_content, mkdir, write_file
+from page_loader.helpers import mkdir, write_file
+from page_loader.network_operations import HTML_EXTENSION, format_url, get_content, is_local
 
 logger = logging.getLogger(__name__)
 
 BS4_FORMATTER = 'html5'
 BS4_PARSER = 'html.parser'
-HTML_EXTENSION = '.html'
 DIRECTORY_TRAILER = '_files'
-DELIMITER = '-'
 TAGS = {'img': 'src', 'script': 'src', 'link': 'href'}  # noqa: WPS407 # mutable module constant
 
 
-def format_url(url, suffix):
-    """Format an url path.
-
-    Args:
-        url: url
-        suffix: suffix for name
-
-    Returns:
-        formatted url
-    """
-    splitted = urlsplit(url)
-    netloc = splitted.netloc.replace('.', DELIMITER)
-    netpath = splitted.path.rstrip('/')
-    extention = pathlib.Path(netpath).suffix.lower()
-    netpath = netpath.replace(extention, '')
-    netpath = re.sub('[^a-zA-Z0-9]', DELIMITER, netpath)
-    formatted = netloc + netpath + suffix
-    if extention:
-        return '{0}{1}'.format(formatted, extention)
-    if suffix:
-        return formatted
-    return formatted + HTML_EXTENSION
-
-
-def is_local(resource_url, page_url):
-    """Check is resource local.
-
-    Args:
-        resource_url: url to resource (image, script, link...)
-        page_url: url to saved web page
-
-    Returns:
-        bool value
-    """
-    resource_netloc = urlsplit(resource_url).netloc
-    page_netloc = urlsplit(page_url).netloc
-    if resource_netloc == '':
-        logger.debug('Resourse {0} is local'.format(resource_url))
-        return True
-    elif resource_netloc == page_netloc:
-        logger.debug('Resourse {0} is local'.format(resource_url))
-        return True
-    logger.debug('Resourse {0} is non local'.format(resource_url))
-    return False
-
-
-def find_local_resources(page_content, url):  # noqa: WPS210, WPS231 # too many vars
-    """Find, replace links to images.         # function with too much cognitive complexity.
+def find_local_resources(page_content, url):  # noqa: WPS210 # too many vars
+    """Find, replace links to images.
 
     Args:
         page_content: content
