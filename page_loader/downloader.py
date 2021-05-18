@@ -86,7 +86,7 @@ def download(url, output_dir):  # noqa: WPS210 # too many local variables
     Returns:
         filepath to saved web page
     """
-    logging.debug('Getting web page content for url {0}'.format(url))
+    logger.debug('Getting web page content for url {0}'.format(url))
 
     response = get_content(url).text
 
@@ -103,7 +103,7 @@ def download(url, output_dir):  # noqa: WPS210 # too many local variables
 
     directory_path = mkpath(output_dir, url, DIRECTORY_TRAILER)
 
-    logging.debug('Creating folder {0} for local resources: images, scripts...'.format(
+    logger.debug('Creating folder {0} for local resources: images, scripts...'.format(
         directory_path,
     ))
     mkdir(directory_path)
