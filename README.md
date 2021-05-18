@@ -9,7 +9,7 @@ command line utility that downloads pages from the Internet and saves them to yo
 
 ##### SYNOPSIS
 ```
-    wget [option]... [URL]...
+    page-loader [option]... [URL]...
 ````
 ##### OPTIONS
 ```
