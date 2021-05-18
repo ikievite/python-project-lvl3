@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hexlet-code"
-version = "0.2.1"
+version = "0.2.2"
 description = "WEB page downloader"
 authors = ["ikievite <ikievite@gmail.com>"]
 packages = [
