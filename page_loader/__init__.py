@@ -5,6 +5,8 @@
 
 import logging
 
+from page_loader.downloader import download
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
