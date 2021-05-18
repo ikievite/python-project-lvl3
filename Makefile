@@ -7,8 +7,8 @@ build:
 package-install:
 	python3 -m pip install --user dist/*.whl
 
-page_loader:
-	poetry run page_loader
+page-loader:
+	poetry run page-loader
 
 lint:
 	poetry run flake8 page_loader

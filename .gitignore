@@ -13,3 +13,6 @@ dist/
 # Coverage reports
 .coverage
 coverage.xml
+
+# Logfile
+logfile.log
