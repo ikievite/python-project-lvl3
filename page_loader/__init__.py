@@ -26,12 +26,12 @@ logger.addHandler(console)
 # File
 logfile = logging.FileHandler(LOGFILE, 'w')
 logfile.setLevel(logging.DEBUG)
-formatter = logging.Formatter(
+file_formatter = logging.Formatter(
     '{asctime} - {levelname} - {name} - {message}',
     datefmt='%Y-%m-%d %H:%M:%S',  # noqa: WPS323 # ignore `%` string formatting
     style='{',
 )
-logfile.setFormatter(formatter)
+logfile.setFormatter(file_formatter)
 
 logger.addHandler(logfile)
 
