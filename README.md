@@ -19,11 +19,11 @@ command line utility that downloads pages from the Internet and saves them to yo
     -h, --help
         show help
 ```
-Demo running
+##### Demo running
 [![asciicast](https://asciinema.org/a/ooYaQZdY139kaRL8WtnmcpMkb.svg)](https://asciinema.org/a/ooYaQZdY139kaRL8WtnmcpMkb)
 
-Installation
+##### Installation
 [![asciicast](https://asciinema.org/a/k2u3GTQK9cCsbbLZds7tTHniD.svg)](https://asciinema.org/a/k2u3GTQK9cCsbbLZds7tTHniD)
 
-Example, an error occurred
+##### Example, an error occurred
 [![asciicast](https://asciinema.org/a/rnAykZZc5He0o3AAvtjxruw3h.svg)](https://asciinema.org/a/rnAykZZc5He0o3AAvtjxruw3h)
