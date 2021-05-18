@@ -15,7 +15,6 @@ from page_loader.downloader import download, replace_local_urls, find_local_reso
 logger = logging.getLogger(__name__)
 
 
-#@pytest.mark.skip(reason='temp')
 def test_download_check_content(requests_mock):
     requests_mock.get('http://test.com', text='data')
     with tempfile.TemporaryDirectory() as directory_name:
