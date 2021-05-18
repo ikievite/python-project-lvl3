@@ -10,18 +10,18 @@ import pytest
 
 import bs4
 
-from page_loader.downloader import download, replace_local_urls, find_local_resources
+from page_loader.downloader import download, replace_local_urls, find_local_resources, BS4_PARSER
 
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skip(reason='temp')
+#@pytest.mark.skip(reason='temp')
 def test_download_check_content(requests_mock):
     requests_mock.get('http://test.com', text='data')
     with tempfile.TemporaryDirectory() as directory_name:
         the_dir = pathlib.Path(directory_name)
         with open(download('http://test.com', the_dir)) as f:
-            assert bs4.BeautifulSoup(f).get_text().strip() == 'data'
+            assert bs4.BeautifulSoup(f, BS4_PARSER).get_text().strip() == 'data'
 
 
 expected_local_resources = [
