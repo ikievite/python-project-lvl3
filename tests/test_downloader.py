@@ -6,7 +6,6 @@
 import pathlib
 import tempfile
 import logging
-import pytest
 
 import bs4
 
