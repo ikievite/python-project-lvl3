@@ -11,8 +11,6 @@ import bs4
 
 from page_loader.downloader import download, replace_local_urls, find_local_resources, BS4_PARSER
 
-logger = logging.getLogger(__name__)
-
 
 def test_download_check_content(requests_mock):
     requests_mock.get('http://test.com', text='data')
