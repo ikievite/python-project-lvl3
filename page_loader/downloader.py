@@ -8,7 +8,7 @@ from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
-from page_loader.file_operations import mkdir, write_file, write_page, mkpath
+from page_loader.file_operations import mkdir, mkpath, write_file, write_page
 from page_loader.network_operations import HTML_EXTENSION, format_url, get_content, is_local
 
 logger = logging.getLogger(__name__)
