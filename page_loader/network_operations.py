@@ -18,7 +18,7 @@ DELIMITER = '-'
 HTML_EXTENSION = '.html'
 
 
-def format_url(url, suffix):
+def format_url(url, suffix=''):
     """Format an url path.
 
     Args:

@@ -11,7 +11,6 @@ import requests
 from progress.counter import Stack
 
 from page_loader.errors import FileError, RequestError
-from page_loader.network_operations import format_url
 
 logger = logging.getLogger(__name__)
 
@@ -101,18 +100,3 @@ def mkdir(directory_path):
         raise FileError('No such output {0} directory'.format(directory_path)) from e
     except PermissionError as e:
         raise FileError('No write permissions for {0} directory'.format(directory_path)) from e
-
-
-def mkpath(directory, url, suffix=''):
-    """Make path to file.
-
-    Args:
-        directory: directory
-        url: url
-        suffix: suffix
-
-    Returns:
-        path
-    """
-    name = format_url(url, suffix)
-    return os.path.join(directory, name)
