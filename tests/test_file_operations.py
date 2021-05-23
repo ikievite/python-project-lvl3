@@ -19,24 +19,22 @@ logger = logging.getLogger(__name__)
 
 DIRECTORY = 'tests/fixtures/OUTPUT_DIRECTORY'
 
-test_data = [
-    ('tests/fixtures/NOT_EXISTS/output', 'No such output {0} directory'),
-    ('/root/no_rights/output', 'No write permissions for {0} directory')
-]
-
 
 def test_mkdir_exists():
     mkdir(DIRECTORY)
     assert True == os.path.exists(DIRECTORY)
 
 
-@pytest.mark.parametrize("directory,error_msg", test_data)
-def test_mkdir_not_found(directory, error_msg):
+test_directories = [
+    ('tests/fixtures/NOT_EXISTS/output'),
+    ('/root/no_rights/output'),
+]
+
+
+@pytest.mark.parametrize("directory", test_directories)
+def test_mkdir_exception(directory):
     with pytest.raises(FileError) as exc_info:
         mkdir(directory)
-    exception_msg = exc_info.value.args[0]
-    expected = error_msg.format(directory)
-    assert exception_msg == expected
 
 
 test_write_page_data = [
