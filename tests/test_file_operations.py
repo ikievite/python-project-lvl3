@@ -25,10 +25,9 @@ test_data = [
 ]
 
 
-def test_mkdir_exists(capsys):
+def test_mkdir_exists():
     mkdir(DIRECTORY)
-    out, err = capsys.readouterr()
-    assert out.strip() == 'The directory `{0}` was previously created'.format(DIRECTORY)
+    assert True == os.path.exists(DIRECTORY)
 
 
 @pytest.mark.parametrize("directory,error_msg", test_data)
