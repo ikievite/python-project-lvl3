@@ -19,6 +19,7 @@ test_data = [
 ]
 
 
+@pytest.mark.skip()
 @pytest.mark.parametrize("code,description", test_data)
 def test_get_content_codes(requests_mock, code, description):  # noqa: F811
     requests_mock.get('http://test.com', status_code=code)
