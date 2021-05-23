@@ -102,7 +102,7 @@ def download(url, output_dir):  # noqa: WPS210 # too many local variables
     logger.debug('Saving web page with filepath: {0}'.format(page_filepath))
     write_page(saved_page, page_filepath)
 
-    directory_path = os.path.join(output_dir, format_url(url, DIRECTORY_TRAILER))
+    directory_path = os.path.join(output_dir, directory_name)
 
     logger.debug('Creating folder {0} for local resources: images, scripts...'.format(
         directory_path,
