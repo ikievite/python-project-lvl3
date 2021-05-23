@@ -22,7 +22,7 @@ DIRECTORY = 'tests/fixtures/OUTPUT_DIRECTORY'
 
 def test_mkdir_exists():
     mkdir(DIRECTORY)
-    assert True == os.path.exists(DIRECTORY)
+    assert True == os.path.exists(DIRECTORY)  # noqa: E712
 
 
 test_directories = [
@@ -33,7 +33,7 @@ test_directories = [
 
 @pytest.mark.parametrize("directory", test_directories)
 def test_mkdir_exception(directory):
-    with pytest.raises(FileError) as exc_info:
+    with pytest.raises(FileError):
         mkdir(directory)
 
 
