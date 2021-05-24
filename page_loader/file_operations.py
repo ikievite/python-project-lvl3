@@ -79,6 +79,8 @@ def write_page(page_content, filepath):
         )) from e
     except PermissionError as e:
         raise FileError('No write permissions for saving `{0}`'.format(filepath)) from e
+    except OSError as e:
+        raise FileError('Disk full. Can`t save {0}'.format(filepath)) from e
 
 
 def mkdir(directory_path):
