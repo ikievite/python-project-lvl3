@@ -29,7 +29,7 @@ class FancyPie(Stack):
         i = min(nphases - 1, int(self.progress * nphases))
         message = self.message % self
         pie = self.phases[i]
-        line = ''.join(['  {0} {1}'.format(pie, message)])
+        line = '  {0} {1}'.format(pie, message)
         self.writeln(line)
 
 
