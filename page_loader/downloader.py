@@ -20,7 +20,7 @@ DIRECTORY_TRAILER = '_files'
 TAGS = {'img': 'src', 'script': 'src', 'link': 'href'}  # noqa: WPS407 # mutable module constant
 
 
-def find_local_resources(page_content, url):  # noqa: WPS210 # too many vars
+def find_local_resources(page_content, url):  # noqa: WPS231 # too much cognitive complexity
     """Find, replace links to images.
 
     Args:
@@ -32,11 +32,12 @@ def find_local_resources(page_content, url):  # noqa: WPS210 # too many vars
     """
     soup = BeautifulSoup(page_content, BS4_PARSER)
     local_resources = []
-    for tag, attr in TAGS.items():
-        for resource in soup.find_all(tag):
-            resource_src_url = resource.get(attr)
-            if resource_src_url and is_local(resource_src_url, url):
-                local_resources.append(resource_src_url)
+    for resource in soup.find_all(TAGS):
+        for attr in resource.attrs:
+            if attr in TAGS.values():
+                resource_src_url = resource.get(attr)
+                if resource_src_url and is_local(resource_src_url, url):
+                    local_resources.append(resource_src_url)
     return local_resources
 
 
