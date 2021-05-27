@@ -54,12 +54,15 @@ def replace_local_urls(page_content, url, local_resources, directory_name):
     """
     soup = BeautifulSoup(page_content, BS4_PARSER)
 
-    for resource in local_resources:
-        resource_filepath = os.path.join(directory_name, format_url(urljoin(url, resource)))
-        if soup.find(href=resource):
-            soup.find(href=resource)['href'] = resource_filepath
-        elif soup.find(src=resource):
-            soup.find(src=resource)['src'] = resource_filepath
+    for resource in soup.find_all(TAGS):
+        attr = TAGS.get(resource.name)
+        resource_src_url = resource.get(attr)
+        if resource_src_url in local_resources:
+            resource_filepath = os.path.join(
+                directory_name,
+                format_url(urljoin(url, resource_src_url)),
+            )
+            resource[attr] = resource_filepath
     return str(soup.prettify(formatter=BS4_FORMATTER))
 
 
