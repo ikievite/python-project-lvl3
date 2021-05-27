@@ -54,4 +54,16 @@ def test_download():
         mock.get('https://site.com/assets/scripts.js', content=scripts)
         with tempfile.TemporaryDirectory() as directory_name:
             the_dir = pathlib.Path(directory_name)
-            download('http://site.com/blog/about', the_dir)
+            downloaded_page = download('http://site.com/blog/about', the_dir)
+
+            with open(downloaded_page) as f:
+                saved_page = f.read()
+            with open('tests/fixtures/site_com_with_replaced_urls.txt') as f:
+                expected_saved_page = f.read()
+            assert saved_page == expected_saved_page
+
+            with open(pathlib.Path(the_dir, 'site-com-blog-about_files/site-com-blog-about-assets-styles.css')) as f:
+                saved_styles = f.read()
+            with open('tests/fixtures/styles.css') as f:
+                styles = f.read()
+            assert saved_styles == styles
