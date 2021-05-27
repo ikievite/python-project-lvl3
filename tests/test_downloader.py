@@ -54,5 +54,4 @@ def test_download():
         mock.get('https://site.com/assets/scripts.js', content=scripts)
         with tempfile.TemporaryDirectory() as directory_name:
             the_dir = pathlib.Path(directory_name)
-            the_dir = 'tests/tests'
             download('http://site.com/blog/about', the_dir)
