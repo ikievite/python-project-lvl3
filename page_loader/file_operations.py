@@ -11,7 +11,6 @@ import requests
 from progress.counter import Stack
 
 from page_loader.errors import FileError, RequestError
-from page_loader.network_operations import format_url
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +29,7 @@ class FancyPie(Stack):
         i = min(nphases - 1, int(self.progress * nphases))
         message = self.message % self
         pie = self.phases[i]
-        line = ''.join(['  {0} {1}'.format(pie, message)])
+        line = '  {0} {1}'.format(pie, message)
         self.writeln(line)
 
 
@@ -80,6 +79,8 @@ def write_page(page_content, filepath):
         )) from e
     except PermissionError as e:
         raise FileError('No write permissions for saving `{0}`'.format(filepath)) from e
+    except OSError as e:
+        raise FileError('Disk full. Can`t save {0}'.format(filepath)) from e
 
 
 def mkdir(directory_path):
@@ -101,18 +102,3 @@ def mkdir(directory_path):
         raise FileError('No such output {0} directory'.format(directory_path)) from e
     except PermissionError as e:
         raise FileError('No write permissions for {0} directory'.format(directory_path)) from e
-
-
-def mkpath(directory, url, suffix=''):
-    """Make path to file.
-
-    Args:
-        directory: directory
-        url: url
-        suffix: suffix
-
-    Returns:
-        path
-    """
-    name = format_url(url, suffix)
-    return os.path.join(directory, name)

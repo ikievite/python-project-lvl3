@@ -3,23 +3,10 @@
 """Test downloader module."""
 
 
-import pathlib
+import requests_mock
 import tempfile
-import logging
-
-import bs4
-
-from page_loader.downloader import download, replace_local_urls, find_local_resources, BS4_PARSER
-
-logger = logging.getLogger(__name__)
-
-
-def test_download_check_content(requests_mock):
-    requests_mock.get('http://test.com', text='data')
-    with tempfile.TemporaryDirectory() as directory_name:
-        the_dir = pathlib.Path(directory_name)
-        with open(download('http://test.com', the_dir)) as f:
-            assert bs4.BeautifulSoup(f, BS4_PARSER).get_text().strip() == 'data'
+import pathlib
+from page_loader.downloader import replace_local_urls, find_local_resources, download
 
 
 expected_local_resources = [
@@ -49,3 +36,34 @@ def test_replace_local_urls():
                 'site-com-blog-about_files'
             )
     assert page_replaced == expected
+
+
+def test_download():
+    with open('tests/fixtures/site_com_content.txt') as f:
+        web_page = f.read()
+    with open('tests/fixtures/styles.css', 'rb') as f:
+        styles = f.read()
+    with open('tests/fixtures/me.jpg', 'rb') as f:
+        me_jpeg = f.read()
+    with open('tests/fixtures/scripts.js', 'rb') as f:
+        scripts = f.read()
+    with requests_mock.Mocker() as mock:
+        mock.get('http://site.com/blog/about', text=web_page)
+        mock.get('http://site.com/blog/about/assets/styles.css', content=styles)
+        mock.get('http://site.com/photos/me.jpg', content=me_jpeg)
+        mock.get('https://site.com/assets/scripts.js', content=scripts)
+        with tempfile.TemporaryDirectory() as directory_name:
+            the_dir = pathlib.Path(directory_name)
+            downloaded_page = download('http://site.com/blog/about', the_dir)
+
+            with open(downloaded_page) as f:
+                saved_page = f.read()
+            with open('tests/fixtures/site_com_with_replaced_urls.txt') as f:
+                expected_saved_page = f.read()
+            assert saved_page == expected_saved_page
+
+            with open(pathlib.Path(the_dir, 'site-com-blog-about_files/site-com-blog-about-assets-styles.css')) as f:
+                saved_styles = f.read()
+            with open('tests/fixtures/styles.css') as f:
+                styles = f.read()
+            assert saved_styles == styles

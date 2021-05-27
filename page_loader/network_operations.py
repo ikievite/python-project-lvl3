@@ -4,7 +4,7 @@
 
 
 import logging
-import pathlib
+import os
 import re
 from urllib.parse import urlsplit
 
@@ -18,7 +18,7 @@ DELIMITER = '-'
 HTML_EXTENSION = '.html'
 
 
-def format_url(url, suffix):
+def format_url(url, suffix=''):
     """Format an url path.
 
     Args:
@@ -31,7 +31,7 @@ def format_url(url, suffix):
     splitted = urlsplit(url)
     netloc = splitted.netloc.replace('.', DELIMITER)
     netpath = splitted.path.rstrip('/')
-    extention = pathlib.Path(netpath).suffix.lower()
+    extention = os.path.splitext(netpath)[-1]
     netpath = netpath.replace(extention, '')
     netpath = re.sub('[^a-zA-Z0-9]', DELIMITER, netpath)
     formatted = netloc + netpath + suffix
@@ -84,4 +84,4 @@ def get_content(url):
         response.raise_for_status()
         return response
     except requests.exceptions.RequestException as e:  # noqa: WPS111 # too short name
-        raise RequestError(e)
+        raise RequestError from e

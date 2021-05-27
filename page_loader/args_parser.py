@@ -29,7 +29,7 @@ def prepare_args_parser():
 
 
 def parse_arguments():
-    """Reurn parser and arguments.
+    """Return parser and arguments.
 
     Returns:
         parser and arguments.

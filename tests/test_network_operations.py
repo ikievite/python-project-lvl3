@@ -13,16 +13,13 @@ from page_loader.errors import RequestError
 
 logger = logging.getLogger(__name__)
 
-test_data = [
-    (404, '404 Client Error'),
-    (503, '503 Server Error'),
-]
+error_codes = [(404), (503)]
 
 
-@pytest.mark.parametrize("code,description", test_data)
-def test_get_content_codes(requests_mock, code, description):  # noqa: F811
+@pytest.mark.parametrize("code", error_codes)
+def test_get_content_codes(requests_mock, code):  # noqa: F811
     requests_mock.get('http://test.com', status_code=code)
-    with pytest.raises(RequestError, match=description):
+    with pytest.raises(RequestError):
         get_content('http://test.com')
 
 
