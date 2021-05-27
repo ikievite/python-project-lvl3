@@ -8,7 +8,7 @@ import logging
 import requests
 import requests_mock  # noqa: F401
 from page_loader.network_operations import get_content, format_url, HTML_EXTENSION
-from page_loader.errors import RequestError, FileError
+from page_loader.errors import RequestError
 
 
 logger = logging.getLogger(__name__)
