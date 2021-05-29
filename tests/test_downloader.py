@@ -38,7 +38,7 @@ def test_replace_local_urls():
     assert page_replaced == expected
 
 
-def test_download():
+def test_download(requests_mock):
     with open('tests/fixtures/site_com_content.txt') as f:
         web_page = f.read()
     with open('tests/fixtures/styles.css', 'rb') as f:
@@ -47,23 +47,22 @@ def test_download():
         me_jpeg = f.read()
     with open('tests/fixtures/scripts.js', 'rb') as f:
         scripts = f.read()
-    with requests_mock.Mocker() as mock:
-        mock.get('http://site.com/blog/about', text=web_page)
-        mock.get('http://site.com/blog/about/assets/styles.css', content=styles)
-        mock.get('http://site.com/photos/me.jpg', content=me_jpeg)
-        mock.get('https://site.com/assets/scripts.js', content=scripts)
-        with tempfile.TemporaryDirectory() as directory_name:
-            the_dir = pathlib.Path(directory_name)
-            downloaded_page = download('http://site.com/blog/about', the_dir)
+    requests_mock.get('http://site.com/blog/about', text=web_page)
+    requests_mock.get('http://site.com/blog/about/assets/styles.css', content=styles)
+    requests_mock.get('http://site.com/photos/me.jpg', content=me_jpeg)
+    requests_mock.get('https://site.com/assets/scripts.js', content=scripts)
+    with tempfile.TemporaryDirectory() as directory_name:
+        the_dir = pathlib.Path(directory_name)
+        downloaded_page = download('http://site.com/blog/about', the_dir)
 
-            with open(downloaded_page) as f:
-                saved_page = f.read()
-            with open('tests/fixtures/site_com_with_replaced_urls.txt') as f:
-                expected_saved_page = f.read()
-            assert saved_page == expected_saved_page
+        with open(downloaded_page) as f:
+            saved_page = f.read()
+        with open('tests/fixtures/site_com_with_replaced_urls.txt') as f:
+            expected_saved_page = f.read()
+        assert saved_page == expected_saved_page
 
-            with open(pathlib.Path(the_dir, 'site-com-blog-about_files/site-com-blog-about-assets-styles.css')) as f:
-                saved_styles = f.read()
-            with open('tests/fixtures/styles.css') as f:
-                styles = f.read()
-            assert saved_styles == styles
+        with open(pathlib.Path(the_dir, 'site-com-blog-about_files/site-com-blog-about-assets-styles.css')) as f:
+            saved_styles = f.read()
+        with open('tests/fixtures/styles.css') as f:
+            styles = f.read()
+        assert saved_styles == styles
