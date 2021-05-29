@@ -39,14 +39,14 @@ def find_local_resources(soup, url):
     return local_resources
 
 
-def replace_local_urls(soup, url, local_resources, directory_name):
+def replace_local_urls(soup, url, local_resources, locals_dirname):
     """Replace links to local resources.
 
     Args:
         soup: tag soup
         url: url
         local_resources: list with urls to local resources
-        directory_name: dir for local resources
+        locals_dirname: name of directory with local resources
 
     Returns:
         page with replaced local urls
@@ -56,24 +56,24 @@ def replace_local_urls(soup, url, local_resources, directory_name):
         resource_src_url = resource.get(attr)
         if resource_src_url in local_resources:
             resource_filepath = os.path.join(
-                directory_name,
+                locals_dirname,
                 format_url(urljoin(url, resource_src_url)),
             )
             resource[attr] = resource_filepath
     return str(soup.prettify(formatter=BS4_FORMATTER))
 
 
-def download_local_resources(resources, url, directory_path):
-    """Download local resources for saved web page.
+def download_local_resources(resources, url, locals_dirpath):
+    """Download local resources for web page.
 
     Args:
         resources: list with local resources
         url: url
-        directory_path: directory_path
+        locals_dirpath: path to directory with local files/resources
     """
     for resource in resources:
         resource_full_url = urljoin(url, resource)
-        resource_filepath = os.path.join(directory_path, format_url(resource_full_url))
+        resource_filepath = os.path.join(locals_dirpath, format_url(resource_full_url))
         write_file(resource_full_url, resource_filepath)
 
 
@@ -82,7 +82,7 @@ def download(url, output_dir):  # noqa: WPS210 # too many local variables
 
     Args:
         url: url path
-        output_dir: path to directory
+        output_dir: path to directory with saved web page
 
     Returns:
         filepath to saved web page
@@ -95,22 +95,22 @@ def download(url, output_dir):  # noqa: WPS210 # too many local variables
 
     local_resources = find_local_resources(soup, url)
 
-    directory_name = format_url(url, DIRECTORY_TRAILER)
+    locals_dirname = format_url(url, DIRECTORY_TRAILER)
 
-    saved_page = replace_local_urls(soup, url, local_resources, directory_name)
+    saved_page = replace_local_urls(soup, url, local_resources, locals_dirname)
 
     page_filepath = os.path.join(output_dir, format_url(url, HTML_EXTENSION))
 
     logger.debug('Saving web page with filepath: {0}'.format(page_filepath))
     write_page(saved_page, page_filepath)
 
-    directory_path = os.path.join(output_dir, directory_name)
+    locals_dirpath = os.path.join(output_dir, locals_dirname)
 
     logger.debug('Creating folder {0} for local resources: images, scripts...'.format(
-        directory_path,
+        locals_dirpath,
     ))
-    mkdir(directory_path)
+    mkdir(locals_dirpath)
 
-    download_local_resources(local_resources, url, directory_path)
+    download_local_resources(local_resources, url, locals_dirpath)
 
     return page_filepath
