@@ -44,8 +44,9 @@ def download_file(url, filename):  # noqa: WPS210 # too many local variables
         filename,
     ))
     try:  # noqa: WPS229 # ignore warning about too long ``try`` body length
-        with requests.get(url, stream=True) as link_content, open(filename, 'wb') as f:
-            link_content.raise_for_status()
+        link_content = requests.get(url, stream=True)
+        link_content.raise_for_status()
+        with open(filename, 'wb') as f:
             total_length = link_content.headers.get('content-length')
             if total_length:
                 chunks = int(total_length) / CHUNK_SIZE
