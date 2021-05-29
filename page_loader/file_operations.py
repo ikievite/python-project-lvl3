@@ -38,6 +38,9 @@ def download_file(url, filename):  # noqa: WPS210 # too many local variables
     Args:
         url: url
         filename: filename
+
+    Returns:
+        download file
     """
     logger.debug('Writing resource {0} to file {1}'.format(
         url,
@@ -46,18 +49,17 @@ def download_file(url, filename):  # noqa: WPS210 # too many local variables
     try:  # noqa: WPS229 # ignore warning about too long ``try`` body length
         link_content = requests.get(url, stream=True)
         link_content.raise_for_status()
-        with open(filename, 'wb') as f:
-            total_length = link_content.headers.get('content-length')
-            if total_length:
-                chunks = int(total_length) / CHUNK_SIZE
-                with FancyPie(url, max=chunks) as progress:
-                    for chunk in link_content.iter_content(CHUNK_SIZE):
-                        f.write(chunk)  # noqa: WPS220 # too deep nesting
-                        progress.next()  # noqa: B305, WPS220
-            else:
-                f.write(link_content.content)
     except requests.exceptions.RequestException as req_err:
         logger.warning(RequestError(req_err))
+    with open(filename, 'wb') as f:
+        total_length = link_content.headers.get('content-length')
+        if not total_length:
+            return f.write(link_content.content)
+        chunks = int(total_length) / CHUNK_SIZE
+        with FancyPie(url, max=chunks) as progress:
+            for chunk in link_content.iter_content(CHUNK_SIZE):
+                f.write(chunk)
+                progress.next()  # noqa: B305
 
 
 def save_page(page_content, filepath):
@@ -86,7 +88,7 @@ def mkdir(directory_path):
     Raises:
         FileError: if there a problem with files.
     """
-    try:  # noqa: WPS225 # ignore warning too many `except` cases
+    try:
         os.mkdir(directory_path)
     except FileExistsError:
         print('The directory `{0}` was previously created'.format(  # noqa: WPS421
