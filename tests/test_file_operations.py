@@ -37,19 +37,16 @@ def test_mkdir_exception(directory):
         mkdir(directory)
 
 
-test_write_page_data = [
-    ('tests/fixtures/NOT_EXISTS/output', 'No such output `tests/fixtures/NOT_EXISTS/output` directory'),
-    ('/root/no_rights/output', 'No write permissions for saving `/root/no_rights/output/test.html`')
+test_dirs = [
+    ('tests/fixtures/NOT_EXISTS/output'),
+    ('/root/no_rights/output'),
 ]
 
 
-@pytest.mark.parametrize("directory,error_msg", test_write_page_data)
-def test_write_page_exc(directory, error_msg):
-    with pytest.raises(FileError) as exc_info:
+@pytest.mark.parametrize("directory", test_dirs)
+def test_write_page_exc(directory):
+    with pytest.raises(FileError):
         write_page('test_content', os.path.join(directory, 'test.html'))
-    exception_msg = exc_info.value.args[0]
-    expected = error_msg
-    assert exception_msg == expected
 
 
 def test_write_page():
