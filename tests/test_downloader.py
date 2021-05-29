@@ -66,3 +66,13 @@ def test_download(requests_mock):
         with open('tests/fixtures/styles.css') as f:
             styles = f.read()
         assert saved_styles == styles
+
+        with open(pathlib.Path(the_dir, 'site-com-blog-about_files/site-com-assets-scripts.js')) as f:
+            saved_scripts = f.read()
+        with open('tests/fixtures/scripts.js') as f:
+            scripts = f.read()
+        assert saved_scripts == scripts
+
+        with open(pathlib.Path(the_dir, 'site-com-blog-about_files/site-com-photos-me.jpg'), 'rb') as f:
+            saved_photo = f.read()
+        assert saved_photo == me_jpeg
