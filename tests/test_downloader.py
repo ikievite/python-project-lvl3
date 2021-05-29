@@ -6,7 +6,8 @@
 import requests_mock
 import tempfile
 import pathlib
-from page_loader.downloader import replace_local_urls, find_local_resources, download
+from bs4 import BeautifulSoup
+from page_loader.downloader import replace_local_urls, find_local_resources, download, BS4_PARSER
 
 
 expected_local_resources = [
@@ -20,17 +21,18 @@ expected_local_resources = [
 def test_find_local_recources():
     with open('tests/fixtures/site_com_content.txt') as content:
         page_content = content.read()
-    local_resources = find_local_resources(page_content, 'https://site.com/blog/about')
+    soup = BeautifulSoup(page_content, BS4_PARSER)
+    local_resources = find_local_resources(soup, 'https://site.com/blog/about')
     assert sorted(local_resources) == sorted(expected_local_resources)
 
 
 def test_replace_local_urls():
     with open('tests/fixtures/site_com_content.txt') as content:
         with open('tests/fixtures/site_com_with_replaced_urls.txt') as result:
-            page_content = content.read()
+            soup = BeautifulSoup(content, BS4_PARSER)
             expected = result.read()
             page_replaced = replace_local_urls(
-                page_content,
+                soup,
                 'https://site.com/blog/about',
                 expected_local_resources,
                 'site-com-blog-about_files'

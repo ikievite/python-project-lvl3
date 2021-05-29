@@ -20,17 +20,16 @@ DIRECTORY_TRAILER = '_files'
 TAGS = {'img': 'src', 'script': 'src', 'link': 'href'}  # noqa: WPS407 # mutable module constant
 
 
-def find_local_resources(page_content, url):
-    """Find, replace links to images.
+def find_local_resources(soup, url):
+    """Find links to local resources.
 
     Args:
-        page_content: content
+        soup: tag soup
         url: link to page
 
     Returns:
-        page with replaced local urls
+        list with local resources
     """
-    soup = BeautifulSoup(page_content, BS4_PARSER)
     local_resources = []
     for resource in soup.find_all(TAGS):
         attr = TAGS.get(resource.name)
@@ -40,11 +39,11 @@ def find_local_resources(page_content, url):
     return local_resources
 
 
-def replace_local_urls(page_content, url, local_resources, directory_name):
-    """Find, replace links to local resources.
+def replace_local_urls(soup, url, local_resources, directory_name):
+    """Replace links to local resources.
 
     Args:
-        page_content: content
+        soup: tag soup
         url: url
         local_resources: list with urls to local resources
         directory_name: dir for local resources
@@ -52,8 +51,6 @@ def replace_local_urls(page_content, url, local_resources, directory_name):
     Returns:
         page with replaced local urls
     """
-    soup = BeautifulSoup(page_content, BS4_PARSER)
-
     for resource in soup.find_all(TAGS):
         attr = TAGS.get(resource.name)
         resource_src_url = resource.get(attr)
@@ -94,11 +91,13 @@ def download(url, output_dir):  # noqa: WPS210 # too many local variables
 
     response = get_content(url).text
 
-    local_resources = find_local_resources(response, url)
+    soup = BeautifulSoup(response, BS4_PARSER)
+
+    local_resources = find_local_resources(soup, url)
 
     directory_name = format_url(url, DIRECTORY_TRAILER)
 
-    saved_page = replace_local_urls(response, url, local_resources, directory_name)
+    saved_page = replace_local_urls(soup, url, local_resources, directory_name)
 
     page_filepath = os.path.join(output_dir, format_url(url, HTML_EXTENSION))
 
