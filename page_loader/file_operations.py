@@ -80,7 +80,7 @@ def write_page(page_content, filepath):
     except PermissionError as e:
         raise FileError('No write permissions for saving `{0}`'.format(filepath)) from e
     except OSError as e:
-        raise FileError('Disk full. Can`t save {0}'.format(filepath)) from e
+        raise FileError('I/O failure occured while saving {0}'.format(filepath)) from e
 
 
 def mkdir(directory_path):
@@ -92,7 +92,7 @@ def mkdir(directory_path):
     Raises:
         FileError: if there a problem with files.
     """
-    try:
+    try:  # noqa: WPS225 # ignore warning too many `except` cases
         os.mkdir(directory_path)
     except FileExistsError:
         print('The directory `{0}` was previously created'.format(  # noqa: WPS421
@@ -102,3 +102,5 @@ def mkdir(directory_path):
         raise FileError('No such output {0} directory'.format(directory_path)) from e
     except PermissionError as e:
         raise FileError('No write permissions for {0} directory'.format(directory_path)) from e
+    except OSError as e:
+        raise FileError('I/O failure occured while creating {0}'.format(directory_path)) from e
