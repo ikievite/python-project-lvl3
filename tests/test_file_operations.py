@@ -63,23 +63,19 @@ def test_write_page():
     assert page_content == saved_content
 
 
-def test_write_file(sample_file='tests/fixtures/original.original'):
+def test_write_file(requests_mock, sample_file='tests/fixtures/original.original'):
     with open(sample_file, 'rb') as f:
         sample_file = f.read()
     dl_path = 'http://test.com/thefile.file'
 
-    with requests_mock.Mocker() as mock:
-        # Return any size (doesn't matter, only for prints)
-        mock.head(requests_mock.ANY, headers={'Content-Length': '100'})
+    requests_mock.get(dl_path, content=sample_file)
 
-        mock.get(dl_path, content=sample_file)
+    with tempfile.TemporaryDirectory() as directory_name:
+        the_dir = pathlib.Path(directory_name)
+        target_path = os.path.join(the_dir, 'test.file')
+        write_file(dl_path, target_path)
 
-        with tempfile.TemporaryDirectory() as directory_name:
-            the_dir = pathlib.Path(directory_name)
-            target_path = os.path.join(the_dir, 'test.file')
-            write_file(dl_path, target_path)
+        assert os.path.isfile(target_path)
 
-            assert os.path.isfile(target_path)
-
-            with open(target_path, 'rb') as f:
-                assert f.read() == sample_file
+        with open(target_path, 'rb') as f:
+            assert f.read() == sample_file
