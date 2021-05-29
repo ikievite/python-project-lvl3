@@ -89,7 +89,7 @@ def download(url, output_dir):  # noqa: WPS210 # too many local variables
     """
     logger.debug('Getting web page content for url {0}'.format(url))
 
-    response = get_content(url).text
+    response = get_content(url)
 
     soup = BeautifulSoup(response, BS4_PARSER)
 

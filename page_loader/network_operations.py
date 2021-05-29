@@ -82,6 +82,6 @@ def get_content(url):
         ))
         response = requests.get(url)
         response.raise_for_status()
-        return response
+        return response.text
     except requests.exceptions.RequestException as e:  # noqa: WPS111 # too short name
         raise RequestError from e
