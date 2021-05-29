@@ -5,7 +5,6 @@
 
 import logging
 import os
-import pathlib
 
 import requests
 from progress.counter import Stack
@@ -73,12 +72,6 @@ def write_page(page_content, filepath):
     try:
         with open(filepath, 'w') as f:  # noqa: WPS111 # ignore warning about too short name
             f.write(page_content)
-    except FileNotFoundError as e:
-        raise FileError('No such output `{0}` directory'.format(
-            pathlib.Path(filepath).parent,
-        )) from e
-    except PermissionError as e:
-        raise FileError('No write permissions for saving `{0}`'.format(filepath)) from e
     except OSError as e:
         raise FileError('I/O failure occured while saving {0}'.format(filepath)) from e
 
@@ -98,9 +91,5 @@ def mkdir(directory_path):
         print('The directory `{0}` was previously created'.format(  # noqa: WPS421
             directory_path,                                 # ignore warning about `print`
         ))
-    except FileNotFoundError as e:
-        raise FileError('No such output {0} directory'.format(directory_path)) from e
-    except PermissionError as e:
-        raise FileError('No write permissions for {0} directory'.format(directory_path)) from e
     except OSError as e:
         raise FileError('I/O failure occured while creating {0}'.format(directory_path)) from e
