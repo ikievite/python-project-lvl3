@@ -10,8 +10,6 @@ import tempfile
 import urllib
 
 import pytest
-import requests_mock
-
 from page_loader.errors import FileError
 from page_loader.file_operations import mkdir, download_file, save_page
 

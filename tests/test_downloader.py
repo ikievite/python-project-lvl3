@@ -3,7 +3,6 @@
 """Test downloader module."""
 
 
-import requests_mock
 import tempfile
 import pathlib
 from bs4 import BeautifulSoup
