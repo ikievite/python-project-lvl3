@@ -18,7 +18,24 @@ DELIMITER = '-'
 HTML_EXTENSION = '.html'
 
 
-def format_url(url, suffix=''):
+def format_dirname(urlpath, suffix):
+    """Format an url path.
+
+    Args:
+        urlpath: url
+        suffix: suffix for name
+
+    Returns:
+        formatted directory name
+    """
+    splitted = urlsplit(urlpath)
+    netloc = splitted.netloc.replace('.', DELIMITER)
+    netpath = splitted.path.rstrip('/')
+    netpath = re.sub('[^a-zA-Z0-9]', DELIMITER, netpath)
+    return netloc + netpath + suffix
+
+
+def format_filename(url, suffix=''):
     """Format an url path.
 
     Args:

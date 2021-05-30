@@ -10,14 +10,15 @@ from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 
 from page_loader.file_operations import download_file, mkdir, save_page
-from page_loader.network_operations import HTML_EXTENSION, format_url, get_content, is_local
-
-logger = logging.getLogger(__name__)
+from page_loader.network_operations import (
+    HTML_EXTENSION, format_dirname, format_filename, get_content, is_local,
+)
 
 BS4_FORMATTER = 'html5'
 BS4_PARSER = 'html.parser'
 DIRECTORY_TRAILER = '_files'
 TAGS = {'img': 'src', 'script': 'src', 'link': 'href'}  # noqa: WPS407 # mutable module constant
+logger = logging.getLogger(__name__)
 
 
 def find_local_resources(soup, url):
@@ -57,7 +58,7 @@ def replace_local_urls(soup, url, local_resources, locals_dirname):
         if resource_src_url in local_resources:
             resource_filepath = os.path.join(
                 locals_dirname,
-                format_url(urljoin(url, resource_src_url)),
+                format_filename(urljoin(url, resource_src_url)),
             )
             resource[attr] = resource_filepath
     return str(soup.prettify(formatter=BS4_FORMATTER))
@@ -73,7 +74,7 @@ def download_resources(resources, url, dirpath):
     """
     for resource in resources:
         resource_full_url = urljoin(url, resource)
-        resource_filepath = os.path.join(dirpath, format_url(resource_full_url))
+        resource_filepath = os.path.join(dirpath, format_filename(resource_full_url))
         download_file(resource_full_url, resource_filepath)
 
 
@@ -95,11 +96,11 @@ def download(url, output_dir):  # noqa: WPS210 # too many local variables
 
     local_resources = find_local_resources(soup, url)
 
-    locals_dirname = format_url(url, DIRECTORY_TRAILER)
+    locals_dirname = format_dirname(url, DIRECTORY_TRAILER)
 
     modified_page = replace_local_urls(soup, url, local_resources, locals_dirname)
 
-    page_filepath = os.path.join(output_dir, format_url(url, HTML_EXTENSION))
+    page_filepath = os.path.join(output_dir, format_filename(url, HTML_EXTENSION))
 
     logger.debug('Saving web page with filepath: {0}'.format(page_filepath))
     save_page(modified_page, page_filepath)
