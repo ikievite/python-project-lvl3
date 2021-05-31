@@ -18,8 +18,8 @@ DELIMITER = '-'
 HTML_EXTENSION = '.html'
 
 
-def format_dirname(urlpath, suffix):
-    """Format an url path.
+def format_resource_dirname(urlpath, suffix):
+    """Format the directory name with local resources.
 
     Args:
         urlpath: url
@@ -42,7 +42,7 @@ def format_filename(url):
         url: url
 
     Returns:
-        formatted url
+        filepath
     """
     splitted = urlsplit(url)
     netloc = splitted.netloc.replace('.', DELIMITER)
@@ -79,13 +79,13 @@ def is_local(resource_url, page_url):
 
 
 def get_content(url):
-    """Download file.
+    """Get web page content.
 
     Args:
         url:url
 
     Returns:
-        content
+        text
 
     Raises:
         RequestError: if there is a network problem

@@ -33,7 +33,7 @@ class FancyPie(Stack):
 
 
 def download_file(url, filename):  # noqa: WPS210 # too many local variables
-    """Write file.
+    """Download file.
 
     Args:
         url: url
@@ -63,7 +63,7 @@ def download_file(url, filename):  # noqa: WPS210 # too many local variables
 
 
 def save_page(page_content, filepath):
-    """Write web page to filesystem.
+    """Save web page to filesystem.
 
     Args:
         page_content: content
