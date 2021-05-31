@@ -6,7 +6,6 @@
 import logging
 import os
 import pathlib
-import tempfile
 import urllib
 
 import pytest
@@ -47,9 +46,9 @@ def test_save_page_exc(directory):
         save_page('test_content', os.path.join(directory, 'test.html'))
 
 
-def test_save_page():
-    with open('tests/fixtures/site_com_content.txt') as web_page, \
-            tempfile.TemporaryDirectory() as directory_name:
+def test_save_page(tmpdir):
+    with open('tests/fixtures/site_com_content.txt') as web_page:
+        directory_name = str(tmpdir)
         page_content = web_page.read()
         page_filepath = urllib.parse.urljoin(directory_name, 'example.html')
     save_page(page_content, page_filepath)
@@ -58,19 +57,19 @@ def test_save_page():
     assert page_content == saved_content
 
 
-def test_download_file(requests_mock, sample_file='tests/fixtures/original.original'):
+def test_download_file(tmpdir, requests_mock, sample_file='tests/fixtures/original.original'):
     with open(sample_file, 'rb') as f:
         sample_file = f.read()
     dl_path = 'http://test.com/thefile.file'
 
     requests_mock.get(dl_path, content=sample_file)
 
-    with tempfile.TemporaryDirectory() as directory_name:
-        the_dir = pathlib.Path(directory_name)
-        target_path = os.path.join(the_dir, 'test.file')
-        download_file(dl_path, target_path)
+    directory_name = str(tmpdir)
+    the_dir = pathlib.Path(directory_name)
+    target_path = os.path.join(the_dir, 'test.file')
+    download_file(dl_path, target_path)
 
-        assert os.path.isfile(target_path)
+    assert os.path.isfile(target_path)
 
-        with open(target_path, 'rb') as f:
-            assert f.read() == sample_file
+    with open(target_path, 'rb') as f:
+        assert f.read() == sample_file
