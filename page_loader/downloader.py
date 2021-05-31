@@ -10,7 +10,12 @@ from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 
 from page_loader.file_operations import download_file, mkdir, save_page
-from page_loader.network_operations import format_dirname, format_filename, get_content, is_local
+from page_loader.network_operations import (
+    format_filename,
+    format_resource_dirname,
+    get_content,
+    is_local,
+)
 
 BS4_FORMATTER = 'html5'
 BS4_PARSER = 'html.parser'
@@ -94,7 +99,7 @@ def download(url, output_dir):  # noqa: WPS210 # too many local variables
 
     local_resources = find_local_resources(soup, url)
 
-    locals_dirname = format_dirname(url, DIRECTORY_TRAILER)
+    locals_dirname = format_resource_dirname(url, DIRECTORY_TRAILER)
 
     modified_page = replace_local_urls(soup, url, local_resources, locals_dirname)
 
