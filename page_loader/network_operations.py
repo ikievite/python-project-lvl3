@@ -35,12 +35,11 @@ def format_dirname(urlpath, suffix):
     return netloc + netpath + suffix
 
 
-def format_filename(url, suffix=''):
+def format_filename(url):
     """Format an url path.
 
     Args:
         url: url
-        suffix: suffix for name
 
     Returns:
         formatted url
@@ -51,11 +50,9 @@ def format_filename(url, suffix=''):
     extention = os.path.splitext(netpath)[-1]
     netpath = netpath.replace(extention, '')
     netpath = re.sub('[^a-zA-Z0-9]', DELIMITER, netpath)
-    formatted = netloc + netpath + suffix
+    formatted = netloc + netpath
     if extention:
         return '{0}{1}'.format(formatted, extention)
-    if suffix:
-        return formatted
     return formatted + HTML_EXTENSION
 
 

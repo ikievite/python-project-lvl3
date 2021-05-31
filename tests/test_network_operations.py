@@ -30,14 +30,14 @@ def test_get_content_exception(requests_mock):  # noqa: F811
 
 
 test_filenames = [
-    ('https://ru.hexlet.io/courses', HTML_EXTENSION, 'ru-hexlet-io-courses.html'),
-    ('https://ru.hexlet.io/assets/professions/nodejs.png', '', 'ru-hexlet-io-assets-professions-nodejs.png'),
-    ('https://site.com/blog/about/assets/styles.css', '', 'site-com-blog-about-assets-styles.css'),
+    ('https://ru.hexlet.io/courses', 'ru-hexlet-io-courses.html'),
+    ('https://ru.hexlet.io/assets/professions/nodejs.png', 'ru-hexlet-io-assets-professions-nodejs.png'),
+    ('https://site.com/blog/about/assets/styles.css', 'site-com-blog-about-assets-styles.css'),
 ]
 
 
-@pytest.mark.parametrize("url, extention, expected", test_filenames)
-def test_format_filename(url, extention, expected):
+@pytest.mark.parametrize("url, expected", test_filenames)
+def test_format_filename(url, expected):
     logger.debug('Testing format_url function')
-    result = format_filename(url, extention)
+    result = format_filename(url)
     assert result == expected
