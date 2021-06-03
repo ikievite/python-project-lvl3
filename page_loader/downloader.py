@@ -58,7 +58,7 @@ def replace_local_urls(soup, url, local_resources, resource_dirname):
     for resource in soup.find_all(TAGS):
         attr = TAGS.get(resource.name)
         resource_src_url = resource.get(attr)
-        if resource_src_url in local_resources:
+        if resource_src_url in set(local_resources):
             resource_filepath = os.path.join(
                 resource_dirname,
                 format_filename(urljoin(url, resource_src_url)),
