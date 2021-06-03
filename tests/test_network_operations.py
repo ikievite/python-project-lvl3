@@ -7,7 +7,7 @@ import pytest
 import logging
 import requests
 import requests_mock  # noqa: F401
-from page_loader.network_operations import get_content, format_filename, HTML_EXTENSION
+from page_loader.network_operations import get_content, format_filename
 from page_loader.errors import RequestError
 
 
