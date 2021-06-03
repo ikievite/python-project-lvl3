@@ -43,14 +43,14 @@ def find_local_resources(soup, url):
     return local_resources
 
 
-def replace_local_urls(soup, url, local_resources, locals_dirname):
+def replace_local_urls(soup, url, local_resources, resource_dirname):
     """Replace links to local resources.
 
     Args:
         soup: tag soup
         url: url
         local_resources: list with urls to local resources
-        locals_dirname: name of directory with local resources
+        resource_dirname: name of directory with local resources
 
     Returns:
         page with replaced local urls
@@ -60,7 +60,7 @@ def replace_local_urls(soup, url, local_resources, locals_dirname):
         resource_src_url = resource.get(attr)
         if resource_src_url in local_resources:
             resource_filepath = os.path.join(
-                locals_dirname,
+                resource_dirname,
                 format_filename(urljoin(url, resource_src_url)),
             )
             resource[attr] = resource_filepath
@@ -99,22 +99,22 @@ def download(url, output_dir):  # noqa: WPS210 # too many local variables
 
     local_resources = find_local_resources(soup, url)
 
-    locals_dirname = format_resource_dirname(url, DIRECTORY_TRAILER)
+    resource_dirname = format_resource_dirname(url, DIRECTORY_TRAILER)
 
-    modified_page = replace_local_urls(soup, url, local_resources, locals_dirname)
+    modified_page = replace_local_urls(soup, url, local_resources, resource_dirname)
 
     page_filepath = os.path.join(output_dir, format_filename(url))
 
     logger.debug('Saving web page with filepath: {0}'.format(page_filepath))
     save_page(modified_page, page_filepath)
 
-    locals_dirpath = os.path.join(output_dir, locals_dirname)
+    resource_dirpath = os.path.join(output_dir, resource_dirname)
 
     logger.debug('Creating folder {0} for local resources: images, scripts...'.format(
-        locals_dirpath,
+        resource_dirpath,
     ))
-    mkdir(locals_dirpath)
+    mkdir(resource_dirpath)
 
-    download_resources(local_resources, url, locals_dirpath)
+    download_resources(local_resources, url, resource_dirpath)
 
     return page_filepath
