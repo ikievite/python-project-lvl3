@@ -15,8 +15,8 @@ def main():
     """Run main function."""
     args = parse_arguments()
     try:  # noqa: WPS229 # ignore warning about too long `try` body length
-        page_content = download(args.url_path, args.output_dir)
-        print('Page was successfully downloaded into {0}'.format(page_content))
+        page_filepath = download(args.url_path, args.output_dir)
+        print('Page was successfully downloaded into {0}'.format(page_filepath))
         sys.exit(os.EX_OK)
     except AppInternalError as e:  # noqa: WPS111 # ignore warning about too short name
         print('Exception: {0}'.format(str(e)))

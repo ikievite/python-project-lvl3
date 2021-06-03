@@ -5,7 +5,6 @@
 
 import logging
 import os
-import pathlib
 
 import requests
 from progress.counter import Stack
@@ -33,35 +32,38 @@ class FancyPie(Stack):
         self.writeln(line)
 
 
-def write_file(url, filename):  # noqa: WPS210 # too many local variables
-    """Write file.
+def download_file(url, filename):  # noqa: WPS210 # too many local variables
+    """Download file.
 
     Args:
         url: url
         filename: filename
+
+    Returns:
+        download file
     """
     logger.debug('Writing resource {0} to file {1}'.format(
         url,
         filename,
     ))
     try:  # noqa: WPS229 # ignore warning about too long ``try`` body length
-        with requests.get(url, stream=True) as link_content, open(filename, 'wb') as f:
-            link_content.raise_for_status()
-            total_length = link_content.headers.get('content-length')
-            if total_length:
-                chunks = int(total_length) / CHUNK_SIZE
-                with FancyPie(url, max=chunks) as progress:
-                    for chunk in link_content.iter_content(CHUNK_SIZE):
-                        f.write(chunk)  # noqa: WPS220 # too deep nesting
-                        progress.next()  # noqa: B305, WPS220
-            else:
-                f.write(link_content.content)
+        link_content = requests.get(url, stream=True)
+        link_content.raise_for_status()
     except requests.exceptions.RequestException as req_err:
         logger.warning(RequestError(req_err))
+    with open(filename, 'wb') as f:
+        total_length = link_content.headers.get('content-length')
+        if not total_length:
+            return f.write(link_content.content)
+        chunks = int(total_length) / CHUNK_SIZE
+        with FancyPie(url, max=chunks) as progress:
+            for chunk in link_content.iter_content(CHUNK_SIZE):
+                f.write(chunk)
+                progress.next()  # noqa: B305
 
 
-def write_page(page_content, filepath):
-    """Write web page to filesystem.
+def save_page(page_content, filepath):
+    """Save web page to filesystem.
 
     Args:
         page_content: content
@@ -73,14 +75,8 @@ def write_page(page_content, filepath):
     try:
         with open(filepath, 'w') as f:  # noqa: WPS111 # ignore warning about too short name
             f.write(page_content)
-    except FileNotFoundError as e:
-        raise FileError('No such output `{0}` directory'.format(
-            pathlib.Path(filepath).parent,
-        )) from e
-    except PermissionError as e:
-        raise FileError('No write permissions for saving `{0}`'.format(filepath)) from e
     except OSError as e:
-        raise FileError('Disk full. Can`t save {0}'.format(filepath)) from e
+        raise FileError('I/O failure occured while saving {0}'.format(filepath)) from e
 
 
 def mkdir(directory_path):
@@ -98,7 +94,5 @@ def mkdir(directory_path):
         print('The directory `{0}` was previously created'.format(  # noqa: WPS421
             directory_path,                                 # ignore warning about `print`
         ))
-    except FileNotFoundError as e:
-        raise FileError('No such output {0} directory'.format(directory_path)) from e
-    except PermissionError as e:
-        raise FileError('No write permissions for {0} directory'.format(directory_path)) from e
+    except OSError as e:
+        raise FileError('I/O failure occured while creating {0}'.format(directory_path)) from e

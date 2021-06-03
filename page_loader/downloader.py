@@ -9,28 +9,31 @@ from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
-from page_loader.file_operations import mkdir, write_file, write_page
-from page_loader.network_operations import HTML_EXTENSION, format_url, get_content, is_local
-
-logger = logging.getLogger(__name__)
+from page_loader.file_operations import download_file, mkdir, save_page
+from page_loader.network_operations import (
+    format_filename,
+    format_resource_dirname,
+    get_content,
+    is_local,
+)
 
 BS4_FORMATTER = 'html5'
 BS4_PARSER = 'html.parser'
 DIRECTORY_TRAILER = '_files'
 TAGS = {'img': 'src', 'script': 'src', 'link': 'href'}  # noqa: WPS407 # mutable module constant
+logger = logging.getLogger(__name__)
 
 
-def find_local_resources(page_content, url):
-    """Find, replace links to images.
+def find_local_resources(soup, url):
+    """Find links to local resources.
 
     Args:
-        page_content: content
+        soup: tag soup
         url: link to page
 
     Returns:
-        page with replaced local urls
+        list with local resources
     """
-    soup = BeautifulSoup(page_content, BS4_PARSER)
     local_resources = []
     for resource in soup.find_all(TAGS):
         attr = TAGS.get(resource.name)
@@ -40,44 +43,42 @@ def find_local_resources(page_content, url):
     return local_resources
 
 
-def replace_local_urls(page_content, url, local_resources, directory_name):
-    """Find, replace links to local resources.
+def replace_local_urls(soup, url, local_resources, resource_dirname):
+    """Replace links to local resources.
 
     Args:
-        page_content: content
+        soup: tag soup
         url: url
         local_resources: list with urls to local resources
-        directory_name: dir for local resources
+        resource_dirname: name of directory with local resources
 
     Returns:
         page with replaced local urls
     """
-    soup = BeautifulSoup(page_content, BS4_PARSER)
-
     for resource in soup.find_all(TAGS):
         attr = TAGS.get(resource.name)
         resource_src_url = resource.get(attr)
-        if resource_src_url in local_resources:
+        if resource_src_url in set(local_resources):
             resource_filepath = os.path.join(
-                directory_name,
-                format_url(urljoin(url, resource_src_url)),
+                resource_dirname,
+                format_filename(urljoin(url, resource_src_url)),
             )
             resource[attr] = resource_filepath
     return str(soup.prettify(formatter=BS4_FORMATTER))
 
 
-def download_local_resources(resources, url, directory_path):
-    """Download local resources for saved web page.
+def download_resources(resources, url, dirpath):
+    """Download resources for web page.
 
     Args:
-        resources: list with local resources
+        resources: list with resources
         url: url
-        directory_path: directory_path
+        dirpath: path to directory with files/resources
     """
     for resource in resources:
         resource_full_url = urljoin(url, resource)
-        resource_filepath = os.path.join(directory_path, format_url(resource_full_url))
-        write_file(resource_full_url, resource_filepath)
+        resource_filepath = os.path.join(dirpath, format_filename(resource_full_url))
+        download_file(resource_full_url, resource_filepath)
 
 
 def download(url, output_dir):  # noqa: WPS210 # too many local variables
@@ -85,33 +86,35 @@ def download(url, output_dir):  # noqa: WPS210 # too many local variables
 
     Args:
         url: url path
-        output_dir: path to directory
+        output_dir: path to directory with saved web page
 
     Returns:
         filepath to saved web page
     """
     logger.debug('Getting web page content for url {0}'.format(url))
 
-    response = get_content(url).text
+    page_content = get_content(url)
 
-    local_resources = find_local_resources(response, url)
+    soup = BeautifulSoup(page_content, BS4_PARSER)
 
-    directory_name = format_url(url, DIRECTORY_TRAILER)
+    local_resources = find_local_resources(soup, url)
 
-    saved_page = replace_local_urls(response, url, local_resources, directory_name)
+    resource_dirname = format_resource_dirname(url, DIRECTORY_TRAILER)
 
-    page_filepath = os.path.join(output_dir, format_url(url, HTML_EXTENSION))
+    modified_page = replace_local_urls(soup, url, local_resources, resource_dirname)
+
+    page_filepath = os.path.join(output_dir, format_filename(url))
 
     logger.debug('Saving web page with filepath: {0}'.format(page_filepath))
-    write_page(saved_page, page_filepath)
+    save_page(modified_page, page_filepath)
 
-    directory_path = os.path.join(output_dir, directory_name)
+    resource_dirpath = os.path.join(output_dir, resource_dirname)
 
     logger.debug('Creating folder {0} for local resources: images, scripts...'.format(
-        directory_path,
+        resource_dirpath,
     ))
-    mkdir(directory_path)
+    mkdir(resource_dirpath)
 
-    download_local_resources(local_resources, url, directory_path)
+    download_resources(local_resources, url, resource_dirpath)
 
     return page_filepath

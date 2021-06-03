@@ -10,7 +10,7 @@ import os
 logger = logging.getLogger(__name__)
 
 
-def prepare_args_parser():
+def parse_arguments():
     """Create parser and adds arguments.
 
     Returns:
@@ -26,13 +26,3 @@ def prepare_args_parser():
         help='set output directory (default: is your current working directory)',
     )
     return parser.parse_args()
-
-
-def parse_arguments():
-    """Return parser and arguments.
-
-    Returns:
-        parser and arguments.
-    """
-    logger.info('Parsed arguments: {0}'.format(prepare_args_parser()))
-    return prepare_args_parser()

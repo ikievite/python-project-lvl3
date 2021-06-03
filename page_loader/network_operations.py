@@ -18,15 +18,31 @@ DELIMITER = '-'
 HTML_EXTENSION = '.html'
 
 
-def format_url(url, suffix=''):
+def format_resource_dirname(urlpath, suffix):
+    """Format the directory name with local resources.
+
+    Args:
+        urlpath: url
+        suffix: suffix for name
+
+    Returns:
+        formatted directory name
+    """
+    splitted = urlsplit(urlpath)
+    netloc = splitted.netloc.replace('.', DELIMITER)
+    netpath = splitted.path.rstrip('/')
+    netpath = re.sub('[^a-zA-Z0-9]', DELIMITER, netpath)
+    return netloc + netpath + suffix
+
+
+def format_filename(url):
     """Format an url path.
 
     Args:
         url: url
-        suffix: suffix for name
 
     Returns:
-        formatted url
+        filepath
     """
     splitted = urlsplit(url)
     netloc = splitted.netloc.replace('.', DELIMITER)
@@ -34,11 +50,9 @@ def format_url(url, suffix=''):
     extention = os.path.splitext(netpath)[-1]
     netpath = netpath.replace(extention, '')
     netpath = re.sub('[^a-zA-Z0-9]', DELIMITER, netpath)
-    formatted = netloc + netpath + suffix
+    formatted = netloc + netpath
     if extention:
         return '{0}{1}'.format(formatted, extention)
-    if suffix:
-        return formatted
     return formatted + HTML_EXTENSION
 
 
@@ -65,13 +79,13 @@ def is_local(resource_url, page_url):
 
 
 def get_content(url):
-    """Download file.
+    """Get web page content.
 
     Args:
         url:url
 
     Returns:
-        content
+        text
 
     Raises:
         RequestError: if there is a network problem
@@ -82,6 +96,6 @@ def get_content(url):
         ))
         response = requests.get(url)
         response.raise_for_status()
-        return response
+        return response.text
     except requests.exceptions.RequestException as e:  # noqa: WPS111 # too short name
         raise RequestError from e
